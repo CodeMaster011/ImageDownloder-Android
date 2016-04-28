@@ -53,33 +53,33 @@ namespace ImageDownloder
         public void CancleRequest(List<string> UId)
         {
             RequestPacket packet = new RequestPacket();
-            packet.Add(RequestPacketData, UId);
+            packet.DataInStringList = UId;
 
             cancleRequest.Enqueue(packet);
         }
 
         public void RequestImageData(string uid, string url, ImageResponseAction responseHandler)  //no reader
         {
-            RequestPacket packet = new RequestPacket();
-            packet.Add(RequestPacketUid, uid);
-            packet.Add(RequestPacketUrl, url);
-            packet.Add(RequestPacketRequestType, RequestPacketRequestTypes.Img);    //image packet
-            packet.Add(RequestPacketAnalisisModuleResponseAction, responseHandler);
-            packet.Add(RequestPacketOwner, RequestPacketOwners.AnalysisModule);
+            //RequestPacket packet = new RequestPacket();
+            //packet.Add(RequestPacketUid, uid);
+            //packet.Add(RequestPacketUrl, url);
+            //packet.Add(RequestPacketRequestType, RequestPacketRequestTypes.Img);    //image packet
+            //packet.Add(RequestPacketAnalisisModuleResponseAction, responseHandler);
+            //packet.Add(RequestPacketOwner, RequestPacketOwners.AnalysisModule);
 
-            pendingRequest.Enqueue(packet);
+            //pendingRequest.Enqueue(packet);
         }
 
         public void RequestImageData(string uid, string url, IResponseHandler responseHandler)  //no reader
         {
-            RequestPacket packet = new RequestPacket();
-            packet.Add(RequestPacketUid, uid);
-            packet.Add(RequestPacketUrl, url);
-            packet.Add(RequestPacketRequestType, RequestPacketRequestTypes.Img);    //image packet
-            packet.Add(RequestPacketAnalisisModuleResponseInner, responseHandler);
-            packet.Add(RequestPacketOwner, RequestPacketOwners.AnalysisModule);
+            //RequestPacket packet = new RequestPacket();
+            //packet.Add(RequestPacketUid, uid);
+            //packet.Add(RequestPacketUrl, url);
+            //packet.Add(RequestPacketRequestType, RequestPacketRequestTypes.Img);    //image packet
+            //packet.Add(RequestPacketAnalisisModuleResponseInner, responseHandler);
+            //packet.Add(RequestPacketOwner, RequestPacketOwners.AnalysisModule);
 
-            pendingRequest.Enqueue(packet);
+            //pendingRequest.Enqueue(packet);
         }
 
         public void RequestStringData(string uid, IWebPageReader webpageReader, IUiResponseHandler responseHandler)
@@ -112,24 +112,24 @@ namespace ImageDownloder
         }
         private void originalResponse(RequestPacket packet, bool isPicture = false)
         {
-            if (isPicture)
-            {
-                if (packet.requestObjs.ContainsKey(RequestPacketAnalisisModuleResponseAction))
-                {
-                    var responseHandlerAction = packet.Get<ImageResponseAction>(RequestPacketAnalisisModuleResponseAction);
-                    responseHandlerAction(
-                        packet.Uid,
-                        packet.Url,
-                        packet.DataInBitmap);
-                }
+            //if (isPicture)
+            //{
+            //    if (packet.requestObjs.ContainsKey(RequestPacket.RequestPacketAnalisisModuleResponseAction))
+            //    {
+            //        var responseHandlerAction = packet.Get<ImageResponseAction>(RequestPacketAnalisisModuleResponseAction);
+            //        responseHandlerAction(
+            //            packet.Uid,
+            //            packet.Url,
+            //            packet.DataInBitmap);
+            //    }
 
-                if (packet.requestObjs.ContainsKey(RequestPacketAnalisisModuleResponseInner))
-                {
+            //    if (packet.requestObjs.ContainsKey(RequestPacketAnalisisModuleResponseInner))
+            //    {
                     
 
-                }
-                return;
-            }
+            //    }
+            //    return;
+            //}
 
             var data = packet.DataInString;
             var reader = packet.WebpageReader;

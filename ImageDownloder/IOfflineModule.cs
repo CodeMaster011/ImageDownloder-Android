@@ -29,8 +29,7 @@ namespace ImageDownloder
 
         public void RequestData(RequestPacket requestPacket, IResponseHandler responseHandler)
         {
-            requestPacket.Add(RequestPacketOfflineModuleResponse, responseHandler);
-
+            requestPacket.OfflineModuleResponse = responseHandler;
             pendingRequest.Enqueue(requestPacket);
         }
 
@@ -51,14 +50,14 @@ namespace ImageDownloder
                 if (pendingRequest.Count > 0)
                 {
                     var reqPacket = pendingRequest.Dequeue();
-                    var reqURL = reqPacket.Get<string>(RequestPacketUrl);
+                    var reqURL = reqPacket.Url;
 
-                    switch (reqPacket.Get<RequestPacketRequestTypes>(RequestPacketRequestType))
+                    switch (reqPacket.RequestType)
                     {
                         case RequestPacketRequestTypes.Unknown:
                             break;
                         case RequestPacketRequestTypes.Str:
-                            var reader = reqPacket.Get<IWebPageReader>(RequestPacketWebpageReader);
+                            var reader = reqPacket.WebpageReader;
                             if (reader.IsPrefereOffline)
                             {
                                 var resultStr = diskCache.GetString(reqURL);
@@ -70,7 +69,7 @@ namespace ImageDownloder
                                 else
                                 {
                                     //data exist in cache
-                                    reqPacket.Add(RequestPacketData, resultStr);   //add result
+                                    reqPacket.DataInString = resultStr;   //add result
                                     pendingResponse.Enqueue(reqPacket); //add to response queue
                                 }
                             }
@@ -85,7 +84,7 @@ namespace ImageDownloder
                             else
                             {
                                 //data exist in cache
-                                reqPacket.Add(RequestPacketData, resultBmp);   //add result
+                                reqPacket.DataInBitmap = resultBmp;   //add result
                                 pendingResponse.Enqueue(reqPacket); //add to response queue
                             }
                             break;
@@ -99,29 +98,29 @@ namespace ImageDownloder
                 {
                     var responsePacket = pendingResponse.Dequeue();
 
-                    var responseHandler = responsePacket.Get<IResponseHandler>(RequestPacketOfflineModuleResponse);
+                    var responseHandler = responsePacket.OfflineModuleResponse;
 
-                    if (responsePacket.requestObjs.ContainsKey(RequestPacketOnlineModuleResponse))  
+                    if (responsePacket.requestObjs.ContainsKey(RequestPacket.RequestPacketOnlineModuleResponse))  
                     {
                         //the response package is coming from IOnlineModule
 
-                        var packUrl = responsePacket.Get<string>(RequestPacketUrl);
+                        var packUrl = responsePacket.Url;
 
-                        switch (responsePacket.Get<RequestPacketRequestTypes>(RequestPacketRequestType))
+                        switch (responsePacket.RequestType)
                         {
                             case RequestPacketRequestTypes.Unknown:
                                 break;
                             case RequestPacketRequestTypes.Str:
-                                var reader = responsePacket.Get<IWebPageReader>(RequestPacketWebpageReader);
+                                var reader = responsePacket.WebpageReader;
                                 if (reader.IsPrefereOffline)
                                 {
                                     if (diskCache.IsKeyExist(packUrl))
                                     {
-                                        diskCache.Put(packUrl, responsePacket.Get<string>(RequestPacketData), true);
+                                        diskCache.Put(packUrl, responsePacket.DataInString, true);
                                     }
                                     else
                                     {
-                                        diskCache.Put(packUrl, responsePacket.Get<string>(RequestPacketData), true);
+                                        diskCache.Put(packUrl, responsePacket.DataInString, true);
                                         responseHandler.RequestProcessedCallback(responsePacket); //make callback
                                     }
                                 }
@@ -132,10 +131,10 @@ namespace ImageDownloder
                                 break;
                             case RequestPacketRequestTypes.Img:
                                 if (diskCache.IsKeyExist(packUrl))
-                                    diskCache.Put(packUrl, responsePacket.Get<Android.Graphics.Bitmap>(RequestPacketData), true);
+                                    diskCache.Put(packUrl, responsePacket.DataInBitmap, true);
                                 else
                                 {
-                                    diskCache.Put(packUrl, responsePacket.Get<Android.Graphics.Bitmap>(RequestPacketData), true);
+                                    diskCache.Put(packUrl, responsePacket.DataInBitmap, true);
                                     responseHandler.RequestProcessedCallback(responsePacket); //make callback
                                 }
                                     
