@@ -32,7 +32,8 @@ namespace ImageDownloder
 
     public class WebPageData : IDisposable
     {
-        public Bitmap drawable { get; set; } = null;    //TODO: Change type to string for holding URL as can be use in ImageProvider for better user experience
+        //public Bitmap drawable { get; set; } = null;    
+        public string ImageUrl { get; set; } = string.Empty;
         public int Index { get; set; } = 0;
         public string UID { get; set; } = string.Empty;
         public string mainText { get; set; } = string.Empty;
@@ -60,8 +61,7 @@ namespace ImageDownloder
         }
 
         public void Dispose()
-        {
-            drawable = null;
+        {            
             underlayingLinkReader = null;
         }
         ~WebPageData()

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using static ImageDownloder.MyGlobal;
 
 namespace ImageDownloder
 {    
@@ -257,35 +256,50 @@ namespace ImageDownloder
             Dispose();
         }
 
-        public static RequestPacket CreatStringPacket(string uid, IWebPageReader reader, RequestPacketOwners owner,
+        public static RequestPacket CreateStringPacket(string uid, IWebPageReader reader, RequestPacketOwners owner,
             IResponseHandler analisisModuleResponse = null, IResponseHandler offlineModuleResponse = null, IResponseHandler onlineModuleResponse = null)
-         => CreatStringPacket(uid, reader.Url, reader, owner, analisisModuleResponse, offlineModuleResponse, onlineModuleResponse);
+         => CreateStringPacket(uid, reader.Url, reader, owner, analisisModuleResponse, offlineModuleResponse, onlineModuleResponse);
 
-        public static RequestPacket CreatStringPacket(string uid, IWebPageReader reader, RequestPacketOwners owner,
+        public static RequestPacket CreateStringPacket(string uid, IWebPageReader reader, RequestPacketOwners owner,
             IUiResponseHandler analisisModuleResponseUI = null, IResponseHandler offlineModuleResponse = null, IResponseHandler onlineModuleResponse = null)
-         => CreatStringPacket(uid, reader.Url, reader, owner, analisisModuleResponseUI, offlineModuleResponse, onlineModuleResponse);
+         => CreateStringPacket(uid, reader.Url, reader, owner, analisisModuleResponseUI, offlineModuleResponse, onlineModuleResponse);
 
-        public static RequestPacket CreatStringPacket(string uid, string url, IWebPageReader reader, RequestPacketOwners owner,
+        public static RequestPacket CreateStringPacket(string uid, string url, IWebPageReader reader, RequestPacketOwners owner,
             IUiResponseHandler analisisModuleResponseUI = null, IResponseHandler offlineModuleResponse = null, IResponseHandler onlineModuleResponse = null)
         {
             var r = new RequestPacket() { RequestType = RequestPacketRequestTypes.Str, Uid = uid, Url = url, WebpageReader = reader, Owner = owner };
             if (analisisModuleResponseUI != null) r.AnalisisModuleResponseUI = analisisModuleResponseUI;
-            if (offlineModule != null) r.OfflineModuleResponse = offlineModuleResponse;
+            if (offlineModuleResponse != null) r.OfflineModuleResponse = offlineModuleResponse;
             if (onlineModuleResponse != null) r.OnlineModuleResponse = onlineModuleResponse;
 
             return r;
         }
 
-        public static RequestPacket CreatStringPacket(string uid, string url, IWebPageReader reader, RequestPacketOwners owner,
+        public static RequestPacket CreateStringPacket(string uid, string url, IWebPageReader reader, RequestPacketOwners owner,
             IResponseHandler analisisModuleResponse = null, IResponseHandler offlineModuleResponse = null, IResponseHandler onlineModuleResponse = null)
         {
             var r = new RequestPacket() { RequestType = RequestPacketRequestTypes.Str, Uid = uid, Url = url, WebpageReader = reader, Owner = owner };
             if (analisisModuleResponse != null) r.AnalisisModuleResponse = analisisModuleResponse;
-            if (offlineModule != null) r.OfflineModuleResponse = offlineModuleResponse;
+            if (offlineModuleResponse != null) r.OfflineModuleResponse = offlineModuleResponse;
             if (onlineModuleResponse != null) r.OnlineModuleResponse = onlineModuleResponse;
 
             return r;
         }
+
+        public static RequestPacket CreateImagePacket(string uid,string url, RequestPacketOwners owner,
+            IResponseHandler analisisModuleResponse = null, IResponseHandler offlineModuleResponse = null, IResponseHandler onlineModuleResponse = null)
+        {
+            var r = new RequestPacket() { RequestType = RequestPacketRequestTypes.Img, Uid = uid, Url = url, Owner = owner };
+            if (analisisModuleResponse != null) r.AnalisisModuleResponse = analisisModuleResponse;
+            if (offlineModuleResponse != null) r.OfflineModuleResponse = offlineModuleResponse;
+            if (onlineModuleResponse != null) r.OnlineModuleResponse = onlineModuleResponse;
+
+            return r;
+        }
+
+        public static RequestPacket CreateImagePacket(string url, RequestPacketOwners owner,
+            IResponseHandler analisisModuleResponse = null, IResponseHandler offlineModuleResponse = null, IResponseHandler onlineModuleResponse = null)
+        => CreateImagePacket(Guid.NewGuid().ToString(), url, owner, analisisModuleResponse, offlineModuleResponse, onlineModuleResponse);
     }
 
     public enum RequestPacketRequestTypes
@@ -299,6 +313,7 @@ namespace ImageDownloder
         UI,
         AnalysisModule,
         OfflineModule,
-        OnlineModule
+        OnlineModule,
+        ImageProvider
     }
 }

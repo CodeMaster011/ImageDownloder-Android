@@ -11,6 +11,7 @@ using Android.Views;
 using Android.Widget;
 using Java.Lang;
 using static ImageDownloder.MyGlobal;
+using Squareup.Picasso;
 
 namespace ImageDownloder
 {
@@ -97,13 +98,13 @@ namespace ImageDownloder
 
             SetContentView(Resource.Layout.website_browser);
 
-            webBrowserContext = this;
+            webBrowserContext = this;            
 
             contentListView = FindViewById<ListView>(Resource.Id.contentListView);
             contentGridView = FindViewById<GridView>(Resource.Id.contentGridView);
 
 
-            adapter = new BrowserListAdapter(null) { liv = contentListView };
+            adapter = new BrowserListAdapter(null, this) { liv = contentListView };
 
             
 
@@ -163,6 +164,7 @@ namespace ImageDownloder
             public WebPageData[] data { get; set; } = null;
 
             public ListView liv { get; set; } = null;
+            private Context context = null;
 
             public override int Count
             {
@@ -208,9 +210,14 @@ namespace ImageDownloder
                 vHolder.mainTextView.Text = data.mainText;
                 vHolder.subTextView.Text = data.subText;
 
-                //TODO: Grab image from ImageProvider using URL for better user experience
-                if (data.drawable != null) vHolder.imageView.SetImageBitmap(data.drawable);
-                else vHolder.imageView.SetImageResource(DefaultPic);
+                //if (data.drawable != null) vHolder.imageView.SetImageBitmap(data.drawable);
+                //else vHolder.imageView.SetImageResource(DefaultPic);
+                //vHolder.imageView.SetImageBitmap(imageProvider.GetBitmapThumbnail(data.ImageUrl));//Grab image from ImageProvider using URL for better user experience
+
+                if (data.ImageUrl!=string.Empty)
+                    Picasso.With(context).Load(data.ImageUrl).Into(vHolder.imageView);
+                else
+                    vHolder.imageView.SetImageResource(DefaultPic);
 
                 if (!data.IsFinal) vHolder.mainTextView.SetTextColor(Android.Graphics.Color.Red);
                 else vHolder.mainTextView.SetTextColor(Android.Graphics.Color.White);
@@ -219,11 +226,13 @@ namespace ImageDownloder
 
                 return convertView;
             }
-            public BrowserListAdapter(WebPageData[] data)
+            public BrowserListAdapter(WebPageData[] data, Context context)
             {
                 this.data = data;
+                this.context = context;
             }
         }
+
         class VAdapterViewHolder : Java.Lang.Object
         {
             public TextView mainTextView, subTextView;

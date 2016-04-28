@@ -34,12 +34,9 @@ namespace ImageDownloder
             Dispose();
         }
     }
-    
-
-    //TODO: ImageDefinition -> Attach and fill with data from IdlebrainAlbumPageReader
-    class ImageDefinition
+    public class ImageDefinition
     {
-        public string thumbnail { get; } = string.Empty;
-        public string original { get; } = string.Empty;
+        public string thumbnil { get; set; }
+        public string original { get; set; }
     }
 }
