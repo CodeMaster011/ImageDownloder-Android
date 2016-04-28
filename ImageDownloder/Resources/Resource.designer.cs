@@ -161,6 +161,9 @@ namespace ImageDownloder
 		public partial class Id
 		{
 			
+			// aapt resource value: 0x7f06000e
+			public const int bigImageView = 2131099662;
+			
 			// aapt resource value: 0x7f060002
 			public const int contentGridView = 2131099650;
 			
@@ -233,6 +236,9 @@ namespace ImageDownloder
 			
 			// aapt resource value: 0x7f040005
 			public const int website_image_view = 2130968581;
+			
+			// aapt resource value: 0x7f040006
+			public const int website_image_view_fragment = 2130968582;
 			
 			static Layout()
 			{

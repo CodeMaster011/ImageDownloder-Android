@@ -16,6 +16,7 @@ namespace ImageDownloder
     {
         public static Context webBrowserContext = null;
         public static Action<int> NotifyDataUpdate = null;
+        public static List<ImageDefinition> albumImages = null;
 
         public static IWebPageReader currentWebPage = null;
         public static int currenItemPosition = -1;

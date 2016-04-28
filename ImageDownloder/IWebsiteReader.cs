@@ -23,11 +23,16 @@ namespace ImageDownloder
         bool IsDownloadRequired { get; set; }
         bool IsSimulation { get; set; }
         bool IsFragmentSubmissiable { get; }
+        bool IsOnClickBigImage { get; }
         FragmentSubmission FragmentSubmissionCallback { get; set; }
 
         WebPageData[] ExtractData(HtmlDocument doc);
-
     }
+    public interface IBigImageCollectionHolder
+    {
+        List<ImageDefinition> AlbumImages { get; set; }
+    }
+
     public delegate void FragmentSubmission(WebPageData[] data);
 
     public class WebPageData : IDisposable

@@ -38,6 +38,7 @@ namespace ImageDownloder.Website
             private const int fragmentCutOff = 20;
 
             public bool IsPrefereOffline { get; } = true;
+            public bool IsOnClickBigImage { get; } = false;
             public PreferedViewing Viewing { get; } = PreferedViewing.List;
             public string Url { get { return "http://www.idlebrain.com/movie/photogallery/heroines.html"; } }
             public bool IsDownloadRequired { get; set; } = true;
@@ -103,7 +104,8 @@ namespace ImageDownloder.Website
             public bool IsPrefereOffline { get; } = true;
             public PreferedViewing Viewing { get; } = PreferedViewing.List;
             public string Url { get { return ""; } }
-            public bool IsDownloadRequired { get; set; } = false;            
+            public bool IsDownloadRequired { get; set; } = false;
+            public bool IsOnClickBigImage { get; } = false;
             public bool IsSimulation { get; set; } = true;
             public bool IsFragmentSubmissiable { get; } = false;
             public FragmentSubmission FragmentSubmissionCallback { get; set; } = null;
@@ -140,12 +142,13 @@ namespace ImageDownloder.Website
                 this.content = content;
             }
         }
-        class IdlebrainAlbumPageReader : IWebPageReader
+        class IdlebrainAlbumPageReader : IWebPageReader, IBigImageCollectionHolder
         {
             private readonly string webDir = "";
             private const int fragmentCutOff = 20;
 
-            public List<ImageDefinition> AlbumImages { get; set; } = null;
+            public List<ImageDefinition> AlbumImages { get; set; } = new List<ImageDefinition>();
+            public bool IsOnClickBigImage { get; } = true;
             public bool IsPrefereOffline { get; } = true;
             public PreferedViewing Viewing { get; } = PreferedViewing.Grid;
             public string Url { get; }
@@ -182,12 +185,13 @@ namespace ImageDownloder.Website
 
                     singleData.ImageUrl = thSrc;    //image link
 
-                    //analysisModule.RequestImageData(singleData.UID, thSrc, 
-                    //    new ImageResponseAction((string uid, string requestedUrl, Android.Graphics.Bitmap bitmap) => 
-                    //    {
-                    //        singleData.drawable = bitmap;
-                    //        NotifyDataUpdate?.Invoke(singleData.Index); //invoke UI update
-                    //    }));
+                    var imgDefi = new ImageDefinition()
+                    {
+                        thumbnil = thSrc,
+                        original = (webDir.EndsWith("/") ? webDir : webDir + "/") + imgNode.GetAttributeValue("src", "").Replace("th_","")
+                    };
+
+                    AlbumImages.Add(imgDefi);
 
                     data.Add(singleData);
 

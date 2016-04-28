@@ -150,6 +150,20 @@ namespace ImageDownloder
                 analysisModule.RequestStringData(UidGenerator(), MoveToWebpage(webpageData.underlayingLinkReader, e.Position), this);
                 currenItemPosition = 0;
             }
+            else if (currentWebPage.IsOnClickBigImage)
+            {
+                try
+                {                    
+                    currenItemPosition = e.Position;
+
+                    albumImages = ((IBigImageCollectionHolder)currentWebPage).AlbumImages;
+                    var websiteImageViewer = new Intent(this, typeof(WebsiteImageViewActivity));
+                    StartActivity(websiteImageViewer);
+                }
+                catch (System.Exception ex)
+                {
+                }
+            }
         }
 
         protected override void OnSaveInstanceState(Bundle outState)
