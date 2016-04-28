@@ -179,14 +179,15 @@ namespace ImageDownloder.Website
                     singleData.IsFinal = true;
                     singleData.Index = index;
                     singleData.UID = UidGenerator();
-                    
-                    //TODO: Set the link of the image in webPageData
-                    analysisModule.RequestImageData(singleData.UID, thSrc, 
-                        new ImageResponseAction((string uid, string requestedUrl, Android.Graphics.Bitmap bitmap) => 
-                        {
-                            singleData.drawable = bitmap;
-                            NotifyDataUpdate?.Invoke(singleData.Index); //invoke UI update
-                        }));
+
+                    singleData.ImageUrl = thSrc;    //image link
+
+                    //analysisModule.RequestImageData(singleData.UID, thSrc, 
+                    //    new ImageResponseAction((string uid, string requestedUrl, Android.Graphics.Bitmap bitmap) => 
+                    //    {
+                    //        singleData.drawable = bitmap;
+                    //        NotifyDataUpdate?.Invoke(singleData.Index); //invoke UI update
+                    //    }));
 
                     data.Add(singleData);
 

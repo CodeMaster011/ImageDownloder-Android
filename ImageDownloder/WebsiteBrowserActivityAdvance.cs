@@ -12,6 +12,7 @@ using Android.Widget;
 using Android.Support.V7.Widget;
 using static ImageDownloder.MyGlobal;
 using Android.Graphics;
+using Squareup.Picasso;
 
 namespace ImageDownloder
 {
@@ -33,7 +34,7 @@ namespace ImageDownloder
             //==========================================================================
 
             //==============================UI ATTACHMENTS==============================
-            recyAdapter = new RecyAdapter();
+            recyAdapter = new RecyAdapter() { context = this};
             recyAdapter.ItemClick += RecyAdapter_ItemClick;
             recyView.SetAdapter(recyAdapter);
 
@@ -117,6 +118,7 @@ namespace ImageDownloder
             public event EventHandler<int> ItemClick = null;
 
             public WebPageData[] data { get; set; } = null;
+            public Context context { get; set; }
 
             public override int ItemCount
             {
@@ -133,8 +135,14 @@ namespace ImageDownloder
                 vHolder.mainTextView.Text = data.mainText;
                 vHolder.subTextView.Text = data.subText;
 
-                if (data.drawable != null) vHolder.imageView.SetImageBitmap(data.drawable);
-                else vHolder.imageView.SetImageResource(DefaultPic);
+                //if (data.drawable != null) vHolder.imageView.SetImageBitmap(data.drawable);
+                //else vHolder.imageView.SetImageResource(DefaultPic);
+                //vHolder.imageView.SetImageBitmap(imageProvider.GetBitmapThumbnail(data.ImageUrl));//Grab image from ImageProvider using URL for better user experience
+
+                if (data.ImageUrl != string.Empty)
+                    Picasso.With(context).Load(data.ImageUrl).Into(vHolder.imageView);
+                else
+                    vHolder.imageView.SetImageResource(DefaultPic);
 
                 if (!data.IsFinal) vHolder.mainTextView.SetTextColor(Android.Graphics.Color.Red);
                 else vHolder.mainTextView.SetTextColor(Android.Graphics.Color.Black);
