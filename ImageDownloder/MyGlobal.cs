@@ -53,35 +53,7 @@ namespace ImageDownloder
             }            
         }
 
-        public const int DefaultPic = Resource.Mipmap.Icon;
-
-        public const string RequestPacketUid = "uid";
-        public const string RequestPacketUrl = "url";
-        public const string RequestPacketRequestType = "reqType";
-        public const string RequestPacketWebpageReader = "reader";
-        public const string RequestPacketAnalisisModuleResponse = "aResponse";
-        public const string RequestPacketAnalisisModuleResponseInner = "aResponseInner";
-        public const string RequestPacketAnalisisModuleResponseAction = "aResponseAction";
-        public const string RequestPacketOfflineModuleResponse = "offResponse";
-        public const string RequestPacketOnlineModuleResponse = "oResponse";
-        public const string RequestPacketData = "data";
-        public const string RequestPacketError = "error";
-        public const string RequestPacketOwner = "owner";
-
-        public enum RequestPacketRequestTypes
-        {
-            Unknown = 0,
-            Str = 1,
-            Img = 2
-        }
-        public enum RequestPacketOwners
-        {
-            UI,
-            AnalysisModule,
-            OfflineModule,
-            OnlineModule
-        }
-        
+        public const int DefaultPic = Resource.Mipmap.Icon;//TODO: Set a new default image for viewing
     }
     public enum PreferedViewing
     {

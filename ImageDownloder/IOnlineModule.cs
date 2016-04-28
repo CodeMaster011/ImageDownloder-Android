@@ -32,9 +32,9 @@ namespace ImageDownloder
 
         public void RequestData(RequestPacket requestPacket, IResponseHandler responseHandler)
         {
-            string uid = requestPacket.Get<string>(RequestPacketUid);
+            string uid = requestPacket.Uid;
 
-            requestPacket.Add(RequestPacketOnlineModuleResponse, responseHandler);
+            requestPacket.OnlineModuleResponse = responseHandler;
 
             pendingRequest.Enqueue(requestPacket);         
         }        
@@ -50,15 +50,15 @@ namespace ImageDownloder
                     {
                         var cancleReqPacket = cancleRequest.Dequeue();
 
-                        if (cancleReqPacket.requestObjs.ContainsKey(RequestPacketData))
+                        if (cancleReqPacket.requestObjs.ContainsKey(RequestPacket.RequestPacketData)) //TODO: Analyze the reason
                         {
-                            var cUids = cancleReqPacket.Get<List<string>>(RequestPacketData);
+                            var cUids = cancleReqPacket.DataInStringList;
 
                             Queue<RequestPacket> tempRequest = new Queue<RequestPacket>();
                             for (int i = 0; i < pendingRequest.Count; i++)
                             {
                                 var tPacket = pendingRequest.Dequeue();
-                                var tUid = tPacket.Get<string>(RequestPacketUid);
+                                var tUid = tPacket.Uid;
 
                                 if (cUids.Contains(tUid)) cUids.Remove(tUid);
                                 else tempRequest.Enqueue(tPacket);
@@ -69,9 +69,9 @@ namespace ImageDownloder
                     //===================REQUEST PROCESSING==================================
                     var packet = pendingRequest.Dequeue();
 
-                    var requestedUrl = packet.Get<string>(RequestPacketUrl);
-                    var responseHandler = packet.Get<IResponseHandler>(RequestPacketOnlineModuleResponse);
-                    var packType = packet.Get<RequestPacketRequestTypes>(RequestPacketRequestType);
+                    var requestedUrl = packet.Url;
+                    var responseHandler = packet.OnlineModuleResponse;
+                    var packType = packet.RequestType;
                     try
                     {
                         switch (packType)
@@ -82,7 +82,7 @@ namespace ImageDownloder
                                 Log.Debug("Online Module:", $"Downloading (string) url {requestedUrl}");
 
                                 string result = Helper.DownloadFile(requestedUrl);
-                                packet.Add(RequestPacketData, result);
+                                packet.DataInString = result;
 
                                 Log.Debug("Online Module:", $"Making processed callback for url {requestedUrl}");
                                 responseHandler.RequestProcessedCallback(packet);
@@ -95,7 +95,7 @@ namespace ImageDownloder
                                 var bitmap =  Android.Graphics.BitmapFactory.DecodeStream(stream);
                                 stream.Close();
 
-                                packet.Add(RequestPacketData, bitmap);
+                                packet.DataInBitmap =  bitmap;
 
                                 Log.Debug("Online Module:", $"Making processed callback for url {requestedUrl}");
                                 responseHandler.RequestProcessedCallback(packet);
@@ -106,7 +106,7 @@ namespace ImageDownloder
                     }
                     catch (Exception ex)
                     {
-                        packet.Add(RequestPacketError, ex.Message);
+                        packet.Error = ex.Message;
                         responseHandler.RequestProcessingError(packet);
                     }
                 }

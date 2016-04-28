@@ -17,8 +17,8 @@ namespace ImageDownloder
     interface IAnalysisModule
     {
         void RequestStringData(string uid, IWebPageReader webpageReader, IUiResponseHandler responseHandler);
-        void RequestImageData(string uid, string url, IResponseHandler responseHandler);
-        void RequestImageData(string uid, string url, ImageResponseAction responseHandler);
+        void RequestImageData(string uid, string url, IResponseHandler responseHandler);//TODO: Remove request handling from IAnalysisModule as ImageProvider is sole responsible for images
+        void RequestImageData(string uid, string url, ImageResponseAction responseHandler);//TODO: Remove request handling from IAnalysisModule as ImageProvider is sole responsible for images
 
         void CancleRequest(WebPageData[] webPagedata);
         void CancleRequest(List<string> UId);
@@ -53,46 +53,38 @@ namespace ImageDownloder
         public void CancleRequest(List<string> UId)
         {
             RequestPacket packet = new RequestPacket();
-            packet.Add(RequestPacketData, UId);
+            packet.DataInStringList = UId;
 
             cancleRequest.Enqueue(packet);
         }
 
         public void RequestImageData(string uid, string url, ImageResponseAction responseHandler)  //no reader
         {
-            RequestPacket packet = new RequestPacket();
-            packet.Add(RequestPacketUid, uid);
-            packet.Add(RequestPacketUrl, url);
-            packet.Add(RequestPacketRequestType, RequestPacketRequestTypes.Img);    //image packet
-            packet.Add(RequestPacketAnalisisModuleResponseAction, responseHandler);
-            packet.Add(RequestPacketOwner, RequestPacketOwners.AnalysisModule);
+            //RequestPacket packet = new RequestPacket();
+            //packet.Add(RequestPacketUid, uid);
+            //packet.Add(RequestPacketUrl, url);
+            //packet.Add(RequestPacketRequestType, RequestPacketRequestTypes.Img);    //image packet
+            //packet.Add(RequestPacketAnalisisModuleResponseAction, responseHandler);
+            //packet.Add(RequestPacketOwner, RequestPacketOwners.AnalysisModule);
 
-            pendingRequest.Enqueue(packet);
+            //pendingRequest.Enqueue(packet);
         }
 
         public void RequestImageData(string uid, string url, IResponseHandler responseHandler)  //no reader
         {
-            RequestPacket packet = new RequestPacket();
-            packet.Add(RequestPacketUid, uid);
-            packet.Add(RequestPacketUrl, url);
-            packet.Add(RequestPacketRequestType, RequestPacketRequestTypes.Img);    //image packet
-            packet.Add(RequestPacketAnalisisModuleResponseInner, responseHandler);
-            packet.Add(RequestPacketOwner, RequestPacketOwners.AnalysisModule);
+            //RequestPacket packet = new RequestPacket();
+            //packet.Add(RequestPacketUid, uid);
+            //packet.Add(RequestPacketUrl, url);
+            //packet.Add(RequestPacketRequestType, RequestPacketRequestTypes.Img);    //image packet
+            //packet.Add(RequestPacketAnalisisModuleResponseInner, responseHandler);
+            //packet.Add(RequestPacketOwner, RequestPacketOwners.AnalysisModule);
 
-            pendingRequest.Enqueue(packet);
+            //pendingRequest.Enqueue(packet);
         }
 
         public void RequestStringData(string uid, IWebPageReader webpageReader, IUiResponseHandler responseHandler)
         {
-            RequestPacket packet = new RequestPacket();
-            packet.Add(RequestPacketUid, uid);
-            packet.Add(RequestPacketUrl, webpageReader.Url);
-            packet.Add(RequestPacketRequestType, RequestPacketRequestTypes.Str);//string packet
-            packet.Add(RequestPacketWebpageReader, webpageReader);
-            packet.Add(RequestPacketAnalisisModuleResponse, responseHandler);
-            packet.Add(RequestPacketOwner, RequestPacketOwners.AnalysisModule);
-
-            pendingRequest.Enqueue(packet);
+            pendingRequest.Enqueue(RequestPacket.CreatStringPacket(uid, webpageReader, RequestPacketOwners.AnalysisModule, responseHandler));
         }
 
         public void RequestProcessedCallback(RequestPacket requestPacket)
@@ -102,46 +94,46 @@ namespace ImageDownloder
 
         private void initialResponse(RequestPacket packet, bool isPicture = false)
         {
-            var responseHandler = packet.Get<IUiResponseHandler>(RequestPacketAnalisisModuleResponse);
+            var responseHandler = packet.AnalisisModuleResponseUI;
             responseHandler.RequestProcessedCallback(
-                packet.Get<string>(RequestPacketUid),
-                packet.Get<string>(RequestPacketUrl),
+                packet.Uid,
+                packet.Url,
                 new WebPageData[] { WebPageData.GetFakeData() });
         }
         private void simulatedResponse(RequestPacket packet, bool isPicture = false)
         {
-            var extractedData = packet.Get<IWebPageReader>(RequestPacketWebpageReader).ExtractData(null);
+            var extractedData = packet.WebpageReader.ExtractData(null);
 
-            var responseHandler = packet.Get<IUiResponseHandler>(RequestPacketAnalisisModuleResponse);
+            var responseHandler = packet.AnalisisModuleResponseUI;
             responseHandler.RequestProcessedCallback(
-                packet.Get<string>(RequestPacketUid),
-                packet.Get<string>(RequestPacketUrl),
+                packet.Uid,
+                packet.Url,
                 extractedData);
         }
         private void originalResponse(RequestPacket packet, bool isPicture = false)
         {
-            if (isPicture)
-            {
-                if (packet.requestObjs.ContainsKey(RequestPacketAnalisisModuleResponseAction))
-                {
-                    var responseHandlerAction = packet.Get<ImageResponseAction>(RequestPacketAnalisisModuleResponseAction);
-                    responseHandlerAction(
-                        packet.Get<string>(RequestPacketUid),
-                        packet.Get<string>(RequestPacketUrl),
-                        packet.Get<Android.Graphics.Bitmap>(RequestPacketData));
-                }
+            //if (isPicture)
+            //{
+            //    if (packet.requestObjs.ContainsKey(RequestPacket.RequestPacketAnalisisModuleResponseAction))
+            //    {
+            //        var responseHandlerAction = packet.Get<ImageResponseAction>(RequestPacketAnalisisModuleResponseAction);
+            //        responseHandlerAction(
+            //            packet.Uid,
+            //            packet.Url,
+            //            packet.DataInBitmap);
+            //    }
 
-                if (packet.requestObjs.ContainsKey(RequestPacketAnalisisModuleResponseInner))
-                {
-                    var responseHandlerInner = packet.Get<IResponseHandler>(RequestPacketAnalisisModuleResponseInner);
+            //    if (packet.requestObjs.ContainsKey(RequestPacketAnalisisModuleResponseInner))
+            //    {
+                    
 
-                }
-                return;
-            }
+            //    }
+            //    return;
+            //}
 
-            var data = packet.Get<string>(RequestPacketData);
-            var reader = packet.Get<IWebPageReader>(RequestPacketWebpageReader);
-            var responseHandler = packet.Get<IUiResponseHandler>(RequestPacketAnalisisModuleResponse);
+            var data = packet.DataInString;
+            var reader = packet.WebpageReader;
+            var responseHandler = packet.AnalisisModuleResponseUI;
 
             HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
             doc.LoadHtml(data);
@@ -151,8 +143,8 @@ namespace ImageDownloder
                 reader.FragmentSubmissionCallback = new FragmentSubmission((
                     (WebPageData[] fData) => {
                         responseHandler.RequestProcessedCallback(
-                        packet.Get<string>(RequestPacketUid),
-                        packet.Get<string>(RequestPacketUrl),
+                        packet.Uid,
+                        packet.Url,
                         fData);
                         Thread.Sleep(10);
                     }));
@@ -161,8 +153,8 @@ namespace ImageDownloder
             var extractedData = reader.ExtractData(doc);
             
             responseHandler.RequestProcessedCallback(
-                packet.Get<string>(RequestPacketUid),
-                packet.Get<string>(RequestPacketUrl),
+                packet.Uid,
+                packet.Url,
                 extractedData);
         }
 
@@ -179,13 +171,13 @@ namespace ImageDownloder
                 {
                     var reqObj = pendingRequest.Dequeue();
 
-                    var objType = reqObj.Get<RequestPacketRequestTypes>(RequestPacketRequestType);
+                    var objType = reqObj.RequestType;
                     switch (objType)
                     {
                         case RequestPacketRequestTypes.Unknown:
                             break;
                         case RequestPacketRequestTypes.Str:
-                            if (!reqObj.Get<IWebPageReader>(RequestPacketWebpageReader).IsSimulation)
+                            if (!reqObj.WebpageReader.IsSimulation)
                             {
                                 initialResponse(reqObj);
                                 offlineModule.RequestData(reqObj, this);
@@ -197,7 +189,7 @@ namespace ImageDownloder
                             }
                             break;
                         case RequestPacketRequestTypes.Img:
-                            offlineModule.RequestData(reqObj, this);    //request for img
+                            offlineModule.RequestData(reqObj, this);    //TODO: Remove and make a direct attachment with ImageProvider
                             break;
                         default:
                             break;
@@ -206,7 +198,7 @@ namespace ImageDownloder
                 if (pendingResponse.Count > 0)
                 {
                     var responsePacket = pendingResponse.Dequeue();
-                    originalResponse(responsePacket, responsePacket.Get<RequestPacketRequestTypes>(RequestPacketRequestType) == RequestPacketRequestTypes.Img ? true : false);
+                    originalResponse(responsePacket, responsePacket.RequestType == RequestPacketRequestTypes.Img ? true : false);
                     responsePacket.Dispose();
                 }
                 Thread.Sleep(1);

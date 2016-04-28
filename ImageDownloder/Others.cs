@@ -34,47 +34,7 @@ namespace ImageDownloder
             Dispose();
         }
     }
-
-    //TODO: RequestPacket -> refine the packet and make some properties like StringData, BitmapData, Owner, Uid, URL, Callbacks etc.
-    class RequestPacket : IDisposable, ICloneable
-    {
-        public Dictionary<string, object> requestObjs = null;
-        public RequestPacket()
-        {
-            requestObjs = new Dictionary<string, object>();
-        }
-        public RequestPacket Add(string key,object value)
-        {
-            requestObjs.Add(key, value);
-            return this;
-        }
-
-        public T Get<T>(string key)
-        {
-            if (!requestObjs.ContainsKey(key)) return default(T);
-            return (T)requestObjs[key];
-        }
-
-        public void Dispose()
-        {
-            requestObjs = null;
-        }
-
-        public object Clone()
-        {
-            var n = new RequestPacket();
-            foreach (var item in requestObjs)
-            {
-                n.Add(item.Key, item.Value);
-            }
-            return n;
-        }
-
-        ~RequestPacket()
-        {
-            Dispose();
-        }
-    }
+    
 
     //TODO: ImageDefinition -> Attach and fill with data from IdlebrainAlbumPageReader
     class ImageDefinition
