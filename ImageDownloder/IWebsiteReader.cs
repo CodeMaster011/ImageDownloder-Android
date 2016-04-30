@@ -22,9 +22,7 @@ namespace ImageDownloder
         bool IsPrefereOffline { get; }
         bool IsDownloadRequired { get; set; }
         bool IsSimulation { get; set; }
-        bool IsFragmentSubmissiable { get; }
-        bool IsOnClickBigImage { get; }
-        //FragmentSubmission FragmentSubmissionCallback { get; set; }
+        bool IsOnClickBigImage { get; }        
 
         IWebPageReader OnClickCallback(WebPageData item);
         WebPageData[] ExtractData(HtmlDocument doc);
@@ -34,8 +32,6 @@ namespace ImageDownloder
         List<ImageDefinition> AlbumImages { get; set; }
     }
 
-    public delegate void FragmentSubmission(WebPageData[] data);
-
     public class WebPageData : IDisposable
     {
         //public Bitmap drawable { get; set; } = null;    
@@ -44,7 +40,7 @@ namespace ImageDownloder
         public string UID { get; set; } = string.Empty;
         public string mainText { get; set; } = string.Empty;
         public string subText { get; set; } = string.Empty;
-        public IWebPageReader underlayingLinkReader { get; set; } = null;
+        //public IWebPageReader underlayingLinkReader { get; set; } = null;
         public bool IsFinal { get; set; } = false;
         public object Tag { get; set; } = null;
 
@@ -53,7 +49,7 @@ namespace ImageDownloder
             WebPageData data = new WebPageData() { IsFinal = false };
             data.mainText = "Loading...";
             data.subText = "Loading...";
-            data.underlayingLinkReader = null;
+            //data.underlayingLinkReader = null;
 
             return data;
         }
@@ -62,14 +58,15 @@ namespace ImageDownloder
             WebPageData data = new WebPageData() { IsFinal = false };
             data.mainText = mainText;
             data.subText = subText;
-            data.underlayingLinkReader = null;
+            //data.underlayingLinkReader = null;
             
             return data;
         }
 
         public void Dispose()
-        {            
-            underlayingLinkReader = null;
+        {
+            //underlayingLinkReader = null;
+            Tag = null;
         }
         ~WebPageData()
         {

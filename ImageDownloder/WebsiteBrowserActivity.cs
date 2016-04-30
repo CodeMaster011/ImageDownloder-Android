@@ -92,6 +92,9 @@ namespace ImageDownloder
             analysisModule.RequestStringData(UidGenerator(), hPage, this);
 
             memoryCache.Clear();
+
+            Android.Util.Log.Debug("WebsiteImageViewActivity",
+                $"Request Packet ={MyGlobal.requestPacketCount}, History Obj ={MyGlobal.historyObjCount}");
         }
         protected override void OnResume()
         {
@@ -132,9 +135,6 @@ namespace ImageDownloder
 
             adapter = new BrowserListAdapter(null, this) { liv = contentListView };
 
-            
-            
-
 
             websiteImageViewer = new Intent(this, typeof(WebsiteImageViewActivity));
 
@@ -170,6 +170,7 @@ namespace ImageDownloder
             NotifyDataUpdate = new Action<int>((int position) => {
                 RunOnUiThread(new Action(() => { adapter.NotifyDataSetChanged(); }));                
             });
+            
         }
 
         private void ContentView_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
@@ -259,12 +260,15 @@ namespace ImageDownloder
                 //vHolder.imageView.SetImageBitmap(imageProvider.GetBitmapThumbnail(data.ImageUrl));//Grab image from ImageProvider using URL for better user experience
 
                 if (data.ImageUrl!=string.Empty)
-                    Picasso.With(context).Load(data.ImageUrl).Placeholder(UnkownImage).Into(vHolder.imageView);
+                    Picasso.With(context).Load(data.ImageUrl).Resize(128,128).CenterInside().Into(vHolder.imageView);
                 else
                     vHolder.imageView.SetImageResource(DefaultPic);
 
                 if (!data.IsFinal) vHolder.mainTextView.SetTextColor(Android.Graphics.Color.Red);
                 else vHolder.mainTextView.SetTextColor(Android.Graphics.Color.White);
+
+                if (data.subText == string.Empty) vHolder.subTextView.Visibility = ViewStates.Gone;
+                else vHolder.subTextView.Visibility = ViewStates.Visible;
 
                 //Android.Util.Log.Debug("UI", parent.Id == liv.Id ? "ListView" : "Grid Called ===================================");
 

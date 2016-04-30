@@ -3,7 +3,6 @@ using System;
 
 namespace ImageDownloder
 {
-    public delegate void ImageResponseAction(string uid, string requestedUrl, Android.Graphics.Bitmap bitmap);
     interface IResponseHandler
     {
         void RequestProcessedCallback(RequestPacket requestPacket);
@@ -14,7 +13,8 @@ namespace ImageDownloder
         void RequestProcessedCallback(string uid, string requestedUrl, WebPageData[] data);
         void RequestProcessingError(string uid, string requestedUrl, string error);
     }
-    class HistoryObject: IDisposable
+    //TODO: Fix the memory leak with HistoryObject
+    class HistoryObject : IDisposable
     {
         public IWebPageReader webpageReader { get; private set; } = null;
         public int clickedPosition { get; private set; } = 0;
@@ -22,6 +22,8 @@ namespace ImageDownloder
         {
             this.webpageReader = webpageReader;
             this.clickedPosition = clickedPosition;
+
+            Android.Util.Log.Debug("HistoryObject", $"Created {++MyGlobal.historyObjCount}");
         }
 
         public void Dispose()
@@ -31,7 +33,9 @@ namespace ImageDownloder
         }
         ~HistoryObject()
         {
+
             Dispose();
+            Android.Util.Log.Debug("HistoryObject", $"GC Collected {--MyGlobal.historyObjCount}");
         }
     }
     public class ImageDefinition

@@ -2,23 +2,26 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:minWidth="25px"
     android:minHeight="25px"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="192px"
+    android:layout_height="128px"
     android:id="@+id/relativeLayout1"
-    android:background="@android:color/black">
+    android:background="@android:color/black"
+    android:gravity="center_horizontal">
     <ImageView
         android:src="@android:drawable/ic_menu_gallery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="128px"
+        android:layout_height="128px"
         android:id="@+id/imageViewG" />
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_alignParentBottom="true">
+        android:layout_alignParentBottom="true"
+        android:background="#253b3f"
+        android:alpha="0.8">
         <TextView
-            android:text="Medium Text"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="1 TEXTE"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/mainTextViewG"

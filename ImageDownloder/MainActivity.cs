@@ -4,6 +4,7 @@ using Android.OS;
 using System.Threading;
 using Android.Content;
 using System.Collections.Generic;
+using Android.Graphics;
 //https://developer.xamarin.com/recipes/android/fundamentals/activity/pass_data_between_activity/
 namespace ImageDownloder
 {
@@ -34,6 +35,11 @@ namespace ImageDownloder
                 //th.Name = $"Download{count++}";
                 //th.Start();
                 //submitButton.Text = "Downloading...";
+
+                Android.Views.Display display = WindowManager.DefaultDisplay;
+                Point size = new Point();
+                display.GetSize(size);
+                MyGlobal.screenSize = new System.Drawing.Size(size.X, size.Y);
 
                 MyPicasso.CreateNewPicasso(ApplicationContext);
                 MyGlobal.MoveToWebpage(new Website.IdlebrainWebsiteReader().IndexPageReader);

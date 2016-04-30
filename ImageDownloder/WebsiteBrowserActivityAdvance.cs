@@ -73,11 +73,25 @@ namespace ImageDownloder
         private void RecyAdapter_ItemClick(object sender, int position)
         {
             var webpageData = recyAdapter.data[position];
-            if (webpageData.IsFinal && webpageData.underlayingLinkReader != null)
+            var nextPageReader = currentWebPage.OnClickCallback(webpageData);
+
+            if (webpageData.IsFinal && nextPageReader != null)
             {
-                analysisModule.RequestStringData(UidGenerator(), MoveToWebpage(webpageData.underlayingLinkReader, position), this);
+                analysisModule.RequestStringData(UidGenerator(), MoveToWebpage(nextPageReader, position), this);
                 currenItemPosition = 0;
             }
+            //else if (currentWebPage.IsOnClickBigImage)
+            //{
+            //    try
+            //    {
+            //        currenItemPosition = e.Position;
+
+            //        albumImages = ((IBigImageCollectionHolder)currentWebPage).AlbumImages;
+
+            //        StartActivity(websiteImageViewer);
+            //    }
+            //    catch (System.Exception) { }
+            //}
         }
 
         public void RequestProcessedCallback(string uid, string requestedUrl, WebPageData[] data)

@@ -17,6 +17,12 @@ namespace ImageDownloder
 {
     static class MyPicasso
     {        
+        public static string GetFormatedKey(string url, int width = 0, int height = 0, bool centerInside = false)
+        {
+            string cenInside = centerInside ? "centerInside\n" : string.Empty;
+            string resize = width == 0 || height == 0 ? string.Empty : $"resize:{width}x{height}\n";
+            return $"{url}\n{resize}{cenInside}";
+        }
         public static void CreateNewPicasso(Context context)
         {
             var mPicassoBuilder = new Picasso.Builder(context);
@@ -29,7 +35,7 @@ namespace ImageDownloder
             private Dictionary<string, Bitmap> memory = new Dictionary<string, Bitmap>();
             private Queue<string> bigImages = new Queue<string>();
 
-            public int ThumbnailSize { get; set; } = 50 * 1024;
+            public int ThumbnailSize { get; set; } = 60 * 1024;
 
             public void Clear()
             {
@@ -64,6 +70,19 @@ namespace ImageDownloder
                 }                
             }
 
+            public void ClearBigImages()
+            {
+                lock (memory)
+                {
+                    while (bigImages.Count > 0)
+                    {
+                        ClearKeyUri(bigImages.Dequeue());
+                    }
+                    Log.Debug("MY_PICASSO", $"BIG IMAGE CLEARED");
+                    Size();
+                }
+            }
+
             public Bitmap Get(string p0)
             {
                 //Log.Debug("MY_PICASSO", "GET KEY = " + p0);
@@ -79,12 +98,12 @@ namespace ImageDownloder
 
             public void Set(string p0, Bitmap p1)
             {
-                string key = p0.Replace("\n", "");
+                string key = p0;
                 if (!memory.ContainsKey(key))
                 {
                     memory.Add(key, p1);
 
-                    if (p1.ByteCount > ThumbnailSize)   //TODO: Check some thumbnail is added to the queue
+                    if (p1.AllocationByteCount > ThumbnailSize)
                         bigImages.Enqueue(key);
 
                     //TODO: Simplify the process of size counting
@@ -97,7 +116,7 @@ namespace ImageDownloder
                         string tempKey = bigImages.Dequeue();
                         if (memory.ContainsKey(tempKey))
                         {
-                            var size = memory[tempKey].ByteCount;
+                            var size = memory[tempKey].AllocationByteCount;
 
                             Log.Debug("MY_PICASSO", $"BIG IMAGE DELETED = {tempKey}");
 
@@ -122,13 +141,53 @@ namespace ImageDownloder
                     {
                         foreach (var item in memory)
                         {
-                            size += item.Value.ByteCount;
+                            size += item.Value.AllocationByteCount;
                         }
                     }
                     catch (Exception) { }
                     Log.Debug("MY_PICASSO", $"CACHE SIZE = {size}");
                 }
                 return size;
+            }
+            
+            public Bitmap decodeSampledBitmapFromResource(Android.Content.Res.Resources res, int resId, int reqWidth, int reqHeight)
+            {
+
+                // First decode with inJustDecodeBounds=true to check dimensions
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.InJustDecodeBounds = true;
+                BitmapFactory.DecodeResource(res, resId, options);
+                
+                // Calculate inSampleSize
+                options.InSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+
+                // Decode bitmap with inSampleSize set
+                options.InJustDecodeBounds = false;
+                return BitmapFactory.DecodeResource(res, resId, options);
+            }
+            public int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight)
+            {
+                // Raw height and width of image
+                int height = options.OutHeight;
+                int width = options.OutWidth;
+                int inSampleSize = 1;
+
+                if (height > reqHeight || width > reqWidth)
+                {
+
+                    int halfHeight = height / 2;
+                    int halfWidth = width / 2;
+
+                    // Calculate the largest inSampleSize value that is a power of 2 and keeps both
+                    // height and width larger than the requested height and width.
+                    while ((halfHeight / inSampleSize) > reqHeight
+                            && (halfWidth / inSampleSize) > reqWidth)
+                    {
+                        inSampleSize *= 2;
+                    }
+                }
+
+                return inSampleSize;
             }
         }
     }

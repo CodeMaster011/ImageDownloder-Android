@@ -14,6 +14,12 @@ namespace ImageDownloder
 {
     static class MyGlobal
     {
+        public static int historyObjCount = 0;
+        public static int requestPacketCount = 0;
+
+
+        public static System.Drawing.Size screenSize = new System.Drawing.Size();
+
         public static Context webBrowserContext = null;
         public static Action<int> NotifyDataUpdate = null;
         public static List<ImageDefinition> albumImages = null;
@@ -27,7 +33,7 @@ namespace ImageDownloder
         public static IAnalysisModule analysisModule = new AnalysisModule();
         public static ICache diskCache = new DiskCache(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath + "/ImageDownloder/Cache", 0);
 
-        public static Squareup.Picasso.ICache memoryCache = new MyPicasso.MyCache();
+        public static MyPicasso.MyCache memoryCache = new MyPicasso.MyCache();
 
         public static bool IsRunning = true;
 

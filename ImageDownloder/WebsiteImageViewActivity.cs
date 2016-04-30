@@ -31,12 +31,19 @@ namespace ImageDownloder
 
         public override void OnBackPressed()
         {
-            Picasso.With(this).CancelTag(pAdapter);
-            memoryCache.Clear();
+            //Picasso.With(this).CancelTag(pAdapter);
             vPager.RemoveAllViews();
             vPager = null;
             pAdapter = null;
-            base.OnBackPressed();
+
+            memoryCache.ClearBigImages();
+
+            Android.Util.Log.Debug("WebsiteImageViewActivity",
+                $"Request Packet ={MyGlobal.requestPacketCount}, History Obj ={MyGlobal.historyObjCount}");
+
+            Finish();
+
+            base.OnBackPressed();            
         }
         
         protected override void OnCreate(Bundle savedInstanceState)
@@ -93,21 +100,21 @@ namespace ImageDownloder
 
                 //Picasso.With(context).Load(albumImages[position].thumbnil).Priority(Picasso.Priority.High).Into(imageView, 
                 //    new C_CC() { imageView = imageView, originalUrl = albumImages[position].original });
-                Picasso.With(context).Load(albumImages[position].thumbnil).Priority(Picasso.Priority.High).Tag(this).Into(imageView);
-                Picasso.With(context).Load(albumImages[position].original).NoPlaceholder().Tag(this).Into(imageView);
+                Picasso.With(context).Load(albumImages[position].thumbnil).Resize(128, 128).CenterInside().Priority(Picasso.Priority.High).Into(imageView);
+                Picasso.With(context).Load(albumImages[position].original).Resize(screenSize.Width,screenSize.Height).CenterInside().NoPlaceholder().Into(imageView);
                                 
                 try
                 {
-                    Picasso.With(context).Load(albumImages[position + 1].original).Tag(this).Fetch();
-                    Picasso.With(context).Load(albumImages[position + 1].thumbnil).Priority(Picasso.Priority.High).Tag(this).Fetch();
+                    Picasso.With(context).Load(albumImages[position + 1].original).Resize(screenSize.Width, screenSize.Height).CenterInside().Fetch();
+                    Picasso.With(context).Load(albumImages[position + 1].thumbnil).Resize(128, 128).CenterInside().Priority(Picasso.Priority.High).Fetch();
                     
                 }
                 catch (System.Exception) { }
 
                 try
                 {
-                    Picasso.With(context).Load(albumImages[position - 1].original).Tag(this).Fetch();
-                    Picasso.With(context).Load(albumImages[position - 1].thumbnil).Priority(Picasso.Priority.High).Tag(this).Fetch();
+                    Picasso.With(context).Load(albumImages[position - 1].original).Resize(screenSize.Width, screenSize.Height).CenterInside().Fetch();
+                    Picasso.With(context).Load(albumImages[position - 1].thumbnil).Resize(128, 128).CenterInside().Priority(Picasso.Priority.High).Fetch();
                 }
                 catch (System.Exception) { }
 
@@ -119,11 +126,11 @@ namespace ImageDownloder
                 ((ViewPager)container).RemoveView((View)objectValue);
                 freeItem.Enqueue((ImageView)objectValue);
                 //Log.Debug("IMAGE_VIEW", $"=*=*=*=OBJECT DELETED=*=*=*=({freeItem.Count})");
-                Picasso.With(context).CancelRequest((ImageView)objectValue);
+                //Picasso.With(context).CancelRequest((ImageView)objectValue);
 
                 //memoryCache.Size();
 
-                memoryCache.ClearKeyUri(albumImages[position].original);
+                memoryCache.ClearKeyUri(MyPicasso.GetFormatedKey(albumImages[position].original, screenSize.Width, screenSize.Height, true));
             }
 
             public void OnPageScrollStateChanged(int state)

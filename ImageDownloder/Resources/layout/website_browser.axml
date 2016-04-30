@@ -16,7 +16,7 @@
         android:horizontalSpacing="5dp"
         android:stretchMode="spacingWidthUniform"
         android:visibility="gone"
-        android:columnWidth="143dp"
+        android:columnWidth="128px"
         android:background="@android:color/black" />
     <ListView
         android:minWidth="25px"

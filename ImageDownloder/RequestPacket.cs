@@ -254,17 +254,23 @@ namespace ImageDownloder
 
         public object Clone()
         {
-            var n = new RequestPacket();
-            foreach (var item in requestObjs)
+            RequestPacket n = null;
+            lock (requestObjs)
             {
-                n.Add(item.Key, item.Value);
-            }
+                n = new RequestPacket();
+                foreach (var item in requestObjs)
+                {
+                    n.Add(item.Key, item.Value);
+                }
+            }            
             return n;
         }
 
         ~RequestPacket()
         {
             Dispose();
+            
+            Android.Util.Log.Debug("RequestPacket", $"GC Collected {--MyGlobal.requestPacketCount}");
         }
 
         public static RequestPacket CreateStringPacket(string uid, IWebPageReader reader, RequestPacketOwners owner,
@@ -283,6 +289,8 @@ namespace ImageDownloder
             if (offlineModuleResponse != null) r.OfflineModuleResponse = offlineModuleResponse;
             if (onlineModuleResponse != null) r.OnlineModuleResponse = onlineModuleResponse;
 
+            Android.Util.Log.Debug("RequestPacket", $"Created {++MyGlobal.requestPacketCount}");
+
             return r;
         }
 
@@ -294,6 +302,8 @@ namespace ImageDownloder
             if (offlineModuleResponse != null) r.OfflineModuleResponse = offlineModuleResponse;
             if (onlineModuleResponse != null) r.OnlineModuleResponse = onlineModuleResponse;
 
+            Android.Util.Log.Debug("RequestPacket", $"Created {++MyGlobal.requestPacketCount}");
+
             return r;
         }
 
@@ -304,6 +314,8 @@ namespace ImageDownloder
             if (analisisModuleResponse != null) r.AnalisisModuleResponse = analisisModuleResponse;
             if (offlineModuleResponse != null) r.OfflineModuleResponse = offlineModuleResponse;
             if (onlineModuleResponse != null) r.OnlineModuleResponse = onlineModuleResponse;
+
+            Android.Util.Log.Debug("RequestPacket", $"Created {++MyGlobal.requestPacketCount}");
 
             return r;
         }

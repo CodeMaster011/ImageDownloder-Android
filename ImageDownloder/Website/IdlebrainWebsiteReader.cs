@@ -45,7 +45,6 @@ namespace ImageDownloder.Website
             public bool IsDownloadRequired { get; set; } = true;
             public bool IsSimulation { get; set; } = false;
             public bool IsFragmentSubmissiable { get; } = true;
-            public FragmentSubmission FragmentSubmissionCallback { get; set; } = null;
 
             public WebPageData[] ExtractData(HtmlDocument doc)
             {
@@ -67,7 +66,6 @@ namespace ImageDownloder.Website
                     string[] stElements = innHtml.Split(new string[] { "<br>"}, StringSplitOptions.RemoveEmptyEntries);
 
                     List<WebPageData> data = new List<WebPageData>();
-                    int index = 0;
 
                     foreach (var st in stElements)
                     {
@@ -87,10 +85,6 @@ namespace ImageDownloder.Website
                             singleData.IsFinal = true;
 
                             data.Add(singleData);
-
-                            index++;
-                            if (index % fragmentCutOff == 0 && FragmentSubmissionCallback != null)
-                                FragmentSubmissionCallback(data.ToArray());
                         }
                     }
                     this.IsSimulation = true;
@@ -119,7 +113,6 @@ namespace ImageDownloder.Website
             public bool IsOnClickBigImage { get; } = false;
             public bool IsSimulation { get; set; } = true;
             public bool IsFragmentSubmissiable { get; } = false;
-            public FragmentSubmission FragmentSubmissionCallback { get; set; } = null;
 
             public string content { get; set; } = string.Empty;
 
@@ -173,8 +166,6 @@ namespace ImageDownloder.Website
             public string Url { get; set; }
             public bool IsDownloadRequired { get; set; } = true;
             public bool IsSimulation { get; set; } = false;
-            public bool IsFragmentSubmissiable { get; } = true;
-            public FragmentSubmission FragmentSubmissionCallback { get; set; } = null;
 
             public WebPageData[] ExtractData(HtmlDocument doc)
             {
@@ -215,9 +206,6 @@ namespace ImageDownloder.Website
                     AlbumImages.Add(imgDefi);
 
                     data.Add(singleData);
-
-                    if (index % fragmentCutOff == 0 && FragmentSubmissionCallback != null)
-                        FragmentSubmissionCallback(data.ToArray());
                 }
                 return data.ToArray();
             }
