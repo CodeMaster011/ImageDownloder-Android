@@ -22,7 +22,7 @@ namespace ImageDownloder
     }
     class OnlineModule : IOnlineModule
     {
-        private Queue<RequestPacket> pendingRequest = new Queue<RequestPacket>();   //TODO: Replace request queue with stack for better user experience
+        private Queue<RequestPacket> pendingRequest = new Queue<RequestPacket>();
         private Queue<RequestPacket> cancleRequest = new Queue<RequestPacket>();
 
         public void CancleRequest(RequestPacket requestPacket)
@@ -50,10 +50,9 @@ namespace ImageDownloder
                     {
                         var cancleReqPacket = cancleRequest.Dequeue();
 
-                        if (cancleReqPacket.requestObjs.ContainsKey(RequestPacket.RequestPacketData)) //TODO: Analyze the reason
+                        var cUids = cancleReqPacket.DataInStringList;
+                        if (cUids != null)
                         {
-                            var cUids = cancleReqPacket.DataInStringList;
-
                             Queue<RequestPacket> tempRequest = new Queue<RequestPacket>();
                             for (int i = 0; i < pendingRequest.Count; i++)
                             {
@@ -88,17 +87,17 @@ namespace ImageDownloder
                                 responseHandler.RequestProcessedCallback(packet);
                                 break;
                             case RequestPacketRequestTypes.Img:
-                                Log.Debug("Online Module:", $"Downloading (image) url {requestedUrl}");
+                                //Log.Debug("Online Module:", $"Downloading (image) url {requestedUrl}");
 
-                                var stream = Helper.DownloadFileInMemory(requestedUrl);
-                                stream.Seek(0, System.IO.SeekOrigin.Begin);
-                                var bitmap =  Android.Graphics.BitmapFactory.DecodeStream(stream);
-                                stream.Close();
+                                //var stream = Helper.DownloadFileInMemory(requestedUrl);
+                                //stream.Seek(0, System.IO.SeekOrigin.Begin);
+                                //var bitmap =  Android.Graphics.BitmapFactory.DecodeStream(stream);
+                                //stream.Close();
 
-                                packet.DataInBitmap =  bitmap;
+                                //packet.DataInBitmap =  bitmap;
 
-                                Log.Debug("Online Module:", $"Making processed callback for url {requestedUrl}");
-                                responseHandler.RequestProcessedCallback(packet);
+                                //Log.Debug("Online Module:", $"Making processed callback for url {requestedUrl}");
+                                //responseHandler.RequestProcessedCallback(packet);
                                 break;
                             default:
                                 break;

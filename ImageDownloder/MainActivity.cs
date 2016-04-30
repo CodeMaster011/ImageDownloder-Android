@@ -35,9 +35,11 @@ namespace ImageDownloder
                 //th.Start();
                 //submitButton.Text = "Downloading...";
 
+                MyPicasso.CreateNewPicasso(ApplicationContext);
                 MyGlobal.MoveToWebpage(new Website.IdlebrainWebsiteReader().IndexPageReader);
                 var websiteBrowser = new Intent(this, typeof(WebsiteBrowserActivity));
                 StartActivity(websiteBrowser);
+                
                 //var websiteBrowserAdvance = new Intent(this, typeof(WebsiteBrowserActivityAdvance));
                 //StartActivity(websiteBrowserAdvance);
             };

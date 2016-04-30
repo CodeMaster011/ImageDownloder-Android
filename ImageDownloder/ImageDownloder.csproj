@@ -71,6 +71,7 @@
     <Compile Include="IWebsiteReader.cs" />
     <Compile Include="MainActivity.cs" />
     <Compile Include="MyGlobal.cs" />
+    <Compile Include="MyPicasso.cs" />
     <Compile Include="Others.cs" />
     <Compile Include="RequestPacket.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
@@ -115,6 +116,7 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\Icon.png" />
   </ItemGroup>
   <ItemGroup>
+    <AndroidResource Include="Resources\mipmap-hdpi\unknownfemale.png" />
     <Content Include="ToDoList.txt" />
   </ItemGroup>
   <ItemGroup>

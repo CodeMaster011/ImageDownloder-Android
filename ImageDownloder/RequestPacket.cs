@@ -238,6 +238,17 @@ namespace ImageDownloder
 
         public void Dispose()
         {
+            try
+            {
+                if(RequestType == RequestPacketRequestTypes.Img)
+                    DataInBitmap?.Dispose();
+            }
+            catch (Exception) { }
+
+            if (requestObjs != null)
+            {
+                requestObjs.Clear();
+            }
             requestObjs = null;
         }
 

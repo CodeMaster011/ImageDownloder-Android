@@ -13,7 +13,7 @@ namespace ImageDownloder
 
     class OfflineModule : IOfflineModule, IResponseHandler
     {
-        private Queue<RequestPacket> pendingRequest = new Queue<RequestPacket>();   //TODO: Replace request queue with stack for better user experience
+        private Queue<RequestPacket> pendingRequest = new Queue<RequestPacket>();
         private Queue<RequestPacket> pendingResponse = new Queue<RequestPacket>();
         private Queue<RequestPacket> cancleRequest = new Queue<RequestPacket>();
 
@@ -117,6 +117,7 @@ namespace ImageDownloder
                                     if (diskCache.IsKeyExist(packUrl))
                                     {
                                         diskCache.Put(packUrl, responsePacket.DataInString, true);
+                                        responsePacket.Dispose();
                                     }
                                     else
                                     {
@@ -131,7 +132,10 @@ namespace ImageDownloder
                                 break;
                             case RequestPacketRequestTypes.Img:
                                 if (diskCache.IsKeyExist(packUrl))
+                                {
                                     diskCache.Put(packUrl, responsePacket.DataInBitmap, true);
+                                    responsePacket.Dispose();
+                                }
                                 else
                                 {
                                     diskCache.Put(packUrl, responsePacket.DataInBitmap, true);

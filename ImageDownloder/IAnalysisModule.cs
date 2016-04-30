@@ -92,17 +92,17 @@ namespace ImageDownloder
             HtmlAgilityPack.HtmlDocument doc = new HtmlAgilityPack.HtmlDocument();
             doc.LoadHtml(data);
             
-            if (reader.IsFragmentSubmissiable)
-            {
-                reader.FragmentSubmissionCallback = new FragmentSubmission((
-                    (WebPageData[] fData) => {
-                        responseHandler.RequestProcessedCallback(
-                        packet.Uid,
-                        packet.Url,
-                        fData);
-                        Thread.Sleep(10);
-                    }));
-            }
+            //if (reader.IsFragmentSubmissiable)
+            //{
+            //    reader.FragmentSubmissionCallback = new FragmentSubmission((
+            //        (WebPageData[] fData) => {
+            //            responseHandler.RequestProcessedCallback(
+            //            packet.Uid,
+            //            packet.Url,
+            //            fData);
+            //            Thread.Sleep(10);
+            //        }));
+            //}
 
             var extractedData = reader.ExtractData(doc);
             
@@ -110,6 +110,8 @@ namespace ImageDownloder
                 packet.Uid,
                 packet.Url,
                 extractedData);
+
+            packet.Dispose();
         }
 
         private void processData()

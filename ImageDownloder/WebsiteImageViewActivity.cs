@@ -17,6 +17,7 @@ using Squareup.Picasso;
 using Android.Graphics;
 using Android.Graphics.Drawables;
 using Java.Lang;
+using Android.Util;
 //http://developer.android.com/reference/android/support/v4/view/ViewPager.html
 //http://developer.android.com/training/displaying-bitmaps/cache-bitmap.html
 //http://developer.android.com/training/displaying-bitmaps/load-bitmap.html
@@ -26,8 +27,18 @@ namespace ImageDownloder
     class WebsiteImageViewActivity: FragmentActivity
     {
         private ViewPager vPager = null;
-        private PageAdapter pAdapter = null;
+        private PagerAdapter pAdapter = null;
 
+        public override void OnBackPressed()
+        {
+            Picasso.With(this).CancelTag(pAdapter);
+            memoryCache.Clear();
+            vPager.RemoveAllViews();
+            vPager = null;
+            pAdapter = null;
+            base.OnBackPressed();
+        }
+        
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
@@ -36,15 +47,22 @@ namespace ImageDownloder
 
             vPager = FindViewById<ViewPager>(Resource.Id.viewPager);
 
-            pAdapter = new PageAdapter(SupportFragmentManager);
+            pAdapter = new P_Ad() { context = this };//new PageAdapter(SupportFragmentManager);
+            vPager.OffscreenPageLimit = 0;
             vPager.Adapter = pAdapter;
+            vPager.CurrentItem = currenItemPosition;
+            vPager.AddOnPageChangeListener((ViewPager.IOnPageChangeListener)pAdapter);
         }
-
-        class PageAdapter : FragmentPagerAdapter, ViewPager.IOnPageChangeListener
+        
+        class P_Ad : PagerAdapter, ViewPager.IOnPageChangeListener
         {
-            private const int MAX_FRAGMENT = 4;
-            private Queue<PageAdapterFragment> fragments = new Queue<PageAdapterFragment>(MAX_FRAGMENT);
+            public Context context { get; set; } = null;
+            private Queue<ImageView> freeItem = new Queue<ImageView>();
 
+            public P_Ad()
+            {
+
+            }
             public override int Count
             {
                 get
@@ -52,31 +70,60 @@ namespace ImageDownloder
                     return albumImages.Count;
                 }
             }
+
+            public override bool IsViewFromObject(View view, Java.Lang.Object objectValue)
+            {
+                return objectValue == view;
+            }
             public override Java.Lang.Object InstantiateItem(View container, int position)
             {
-                return base.InstantiateItem(container, position);
+                var layoutInflator = (LayoutInflater)context.GetSystemService(LayoutInflaterService);
 
-            }
-            public override Fragment GetItem(int position)
-            {
-                //if (fragments.Count >= MAX_FRAGMENT)
-                //{
-                //    var fr = fragments.Dequeue();
-                //    fr.imageDefinition = albumImages[position];
-                //    fragments.Enqueue(fr);
-                //    return fr;
-                //}
-                //else
-                //{
-                //    var fr = new PageAdapterFragment() { imageDefinition = albumImages[position] };
-                //    fragments.Enqueue(fr);
-                //    return fr;
-                //}
-                return new PageAdapterFragment() { imageDefinition = albumImages[position] };
+                ImageView imageView = null;
+                if (freeItem.Count > 0)
+                {
+                    imageView = freeItem.Dequeue();
+                    Log.Debug("IMAGE_VIEW", $"***OLD OBJECT USED***({freeItem.Count})");
+                }
+                else
+                {
+                    imageView = new ImageView(context);
+                    Log.Debug("IMAGE_VIEW", "=====NEW OBJECT CREATED========");
+                }
+
+                //Picasso.With(context).Load(albumImages[position].thumbnil).Priority(Picasso.Priority.High).Into(imageView, 
+                //    new C_CC() { imageView = imageView, originalUrl = albumImages[position].original });
+                Picasso.With(context).Load(albumImages[position].thumbnil).Priority(Picasso.Priority.High).Tag(this).Into(imageView);
+                Picasso.With(context).Load(albumImages[position].original).NoPlaceholder().Tag(this).Into(imageView);
+                                
+                try
+                {
+                    Picasso.With(context).Load(albumImages[position + 1].original).Tag(this).Fetch();
+                    Picasso.With(context).Load(albumImages[position + 1].thumbnil).Priority(Picasso.Priority.High).Tag(this).Fetch();
+                    
+                }
+                catch (System.Exception) { }
+
+                try
+                {
+                    Picasso.With(context).Load(albumImages[position - 1].original).Tag(this).Fetch();
+                    Picasso.With(context).Load(albumImages[position - 1].thumbnil).Priority(Picasso.Priority.High).Tag(this).Fetch();
+                }
+                catch (System.Exception) { }
+
+                ((ViewPager)container).AddView(imageView);
+                return imageView;
             }
             public override void DestroyItem(View container, int position, Java.Lang.Object objectValue)
             {
                 ((ViewPager)container).RemoveView((View)objectValue);
+                freeItem.Enqueue((ImageView)objectValue);
+                //Log.Debug("IMAGE_VIEW", $"=*=*=*=OBJECT DELETED=*=*=*=({freeItem.Count})");
+                Picasso.With(context).CancelRequest((ImageView)objectValue);
+
+                //memoryCache.Size();
+
+                memoryCache.ClearKeyUri(albumImages[position].original);
             }
 
             public void OnPageScrollStateChanged(int state)
@@ -86,71 +133,13 @@ namespace ImageDownloder
 
             public void OnPageScrolled(int position, float positionOffset, int positionOffsetPixels)
             {
-                currenItemPosition = position;
+                
             }
 
             public void OnPageSelected(int position)
             {
-                
+                currenItemPosition = position;
             }
-
-            public PageAdapter(support.FragmentManager fm):base(fm)
-            {
-
-            }
-        }
-
-        class PageAdapterFragment : Fragment
-        {
-            public ImageDefinition imageDefinition { get; set; } = null;
-            public bool IsOriginalLoaded { get; set; } = false;
-
-            public override View OnCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
-            {
-                var v = inflater.Inflate(Resource.Layout.website_image_view_fragment, container, false);
-                var imgView = v.FindViewById<ImageView>(Resource.Id.bigImageView);
-
-                Picasso.With(Context).Load(imageDefinition.thumbnil).Into(imgView);
-
-                if(IsOriginalLoaded)
-                    Picasso.With(Context).Load(imageDefinition.original).Into(imgView);
-                else
-                    Picasso.With(Context).Load(imageDefinition.original).
-                        Into(new ImageLoadTarget() { imageView = imgView, parent = this });
-
-                return v;
-            }
-        }
-        class ImageLoadTarget : Java.Lang.Object, ITarget
-        {
-            public ImageView imageView { get; set; } = null;
-            public PageAdapterFragment parent { get; set; } = null;
-
-            public void OnBitmapFailed(Drawable p0)
-            {
-                
-            }
-
-            public void OnBitmapLoaded(Bitmap p0, Picasso.LoadedFrom p1)
-            {
-                imageView.SetImageBitmap(p0);
-                parent.IsOriginalLoaded = true;
-            }
-
-            public void OnPrepareLoad(Drawable p0)
-            {
-                
-            }
-        }
-        class PageAdapterFragmentViewHolder
-        {
-            public ImageView imageView { get; set; } = null;
-
-            public PageAdapterFragmentViewHolder(View v)
-            {
-                imageView = v.FindViewById<ImageView>(Resource.Id.bigImageView);
-            }
-            public PageAdapterFragmentViewHolder() { }
         }
     }
 }

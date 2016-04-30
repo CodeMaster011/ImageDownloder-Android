@@ -24,8 +24,9 @@ namespace ImageDownloder
         bool IsSimulation { get; set; }
         bool IsFragmentSubmissiable { get; }
         bool IsOnClickBigImage { get; }
-        FragmentSubmission FragmentSubmissionCallback { get; set; }
+        //FragmentSubmission FragmentSubmissionCallback { get; set; }
 
+        IWebPageReader OnClickCallback(WebPageData item);
         WebPageData[] ExtractData(HtmlDocument doc);
     }
     public interface IBigImageCollectionHolder
@@ -45,6 +46,7 @@ namespace ImageDownloder
         public string subText { get; set; } = string.Empty;
         public IWebPageReader underlayingLinkReader { get; set; } = null;
         public bool IsFinal { get; set; } = false;
+        public object Tag { get; set; } = null;
 
         public static WebPageData GetFakeData()
         {

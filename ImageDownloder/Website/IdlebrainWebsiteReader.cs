@@ -34,13 +34,14 @@ namespace ImageDownloder.Website
 
         class IdlebrainIndexPageReader : IWebPageReader
         {
+            private IdlebrainSimulatedPage simulatedPage = new IdlebrainSimulatedPage("");
             private WebPageData[] cached = null;
             private const int fragmentCutOff = 20;
 
             public bool IsPrefereOffline { get; } = true;
             public bool IsOnClickBigImage { get; } = false;
             public PreferedViewing Viewing { get; } = PreferedViewing.List;
-            public string Url { get { return "http://www.idlebrain.com/movie/photogallery/heroines.html"; } }
+            public string Url { get { return "http://www.idlebrain.com/movie/photogallery/heroines.html"; }}
             public bool IsDownloadRequired { get; set; } = true;
             public bool IsSimulation { get; set; } = false;
             public bool IsFragmentSubmissiable { get; } = true;
@@ -80,7 +81,9 @@ namespace ImageDownloder.Website
                                 mainNode.InnerText.Replace(':','\0'), 
                                 aLinkNodes != null ? $"Contain : {aLinkNodes.Count.ToString()}" : "");
 
-                            singleData.underlayingLinkReader = new IdlebrainSimulatedPage(sss);
+                            //singleData.underlayingLinkReader = new IdlebrainSimulatedPage(sss);//TODO: MEMORY LEAK -> don't create new instance for every item
+                            singleData.Tag = sss;   //Add the data as tag
+
                             singleData.IsFinal = true;
 
                             data.Add(singleData);
@@ -96,9 +99,17 @@ namespace ImageDownloder.Website
                 catch (Exception) { }
                 return null;
             }
+
+            public IWebPageReader OnClickCallback(WebPageData item)
+            {
+                string content = (string)item.Tag;
+                simulatedPage.content = content;
+                return simulatedPage;
+            }
         }
         class IdlebrainSimulatedPage : IWebPageReader
         {
+            private IdlebrainAlbumPageReader albumPageReader = new IdlebrainAlbumPageReader();
             private const string webFolder = "http://www.idlebrain.com/movie/photogallery/";
 
             public bool IsPrefereOffline { get; } = true;
@@ -110,7 +121,7 @@ namespace ImageDownloder.Website
             public bool IsFragmentSubmissiable { get; } = false;
             public FragmentSubmission FragmentSubmissionCallback { get; set; } = null;
 
-            public string content { get; } = string.Empty;
+            public string content { get; set; } = string.Empty;
 
             public WebPageData[] ExtractData(HtmlDocument doc)
             {
@@ -129,14 +140,22 @@ namespace ImageDownloder.Website
 
                         WebPageData singleData = WebPageData.GetTextOnly($"{alinkNode.InnerText} - {mainNode.InnerText.Replace(':', '\0')}", "");
                         singleData.IsFinal = true;
-                        singleData.underlayingLinkReader = new IdlebrainAlbumPageReader(link);
-
+                        //singleData.underlayingLinkReader = new IdlebrainAlbumPageReader(link);//TODO: MEMORY LEAK -> don't create new instance for every item
+                        singleData.Tag = link;  //add the link in tag
                         data.Add(singleData);
                     }
                     return data.ToArray();
                 }
                 return null;
             }
+
+            public IWebPageReader OnClickCallback(WebPageData item)
+            {
+                var link = (string)item.Tag;
+                albumPageReader.ChangeUrl(link);
+                return albumPageReader;
+            }
+
             public IdlebrainSimulatedPage(string content)
             {
                 this.content = content;
@@ -144,14 +163,14 @@ namespace ImageDownloder.Website
         }
         class IdlebrainAlbumPageReader : IWebPageReader, IBigImageCollectionHolder
         {
-            private readonly string webDir = "";
+            private string webDir = "";
             private const int fragmentCutOff = 20;
 
             public List<ImageDefinition> AlbumImages { get; set; } = new List<ImageDefinition>();
             public bool IsOnClickBigImage { get; } = true;
             public bool IsPrefereOffline { get; } = true;
             public PreferedViewing Viewing { get; } = PreferedViewing.Grid;
-            public string Url { get; }
+            public string Url { get; set; }
             public bool IsDownloadRequired { get; set; } = true;
             public bool IsSimulation { get; set; } = false;
             public bool IsFragmentSubmissiable { get; } = true;
@@ -159,7 +178,9 @@ namespace ImageDownloder.Website
 
             public WebPageData[] ExtractData(HtmlDocument doc)
             {
+                AlbumImages.Clear();
                 Dictionary<string, string> att = new Dictionary<string, string>();
+
                 att.Add("width", "100%");
                 att.Add("style", "background-color: white;");
                 
@@ -210,7 +231,22 @@ namespace ImageDownloder.Website
                 var index = url.LastIndexOf('/');
                 return url.Substring(0, index);
             }
+
+            public IWebPageReader OnClickCallback(WebPageData item)
+            {
+                return null;
+            }
+
             public IdlebrainAlbumPageReader(string url)
+            {
+                ChangeUrl(url);
+            }
+
+            public IdlebrainAlbumPageReader()
+            {
+
+            }
+            public void ChangeUrl(string url)
             {
                 Url = url;
                 webDir = getWebFolderPath(url);

@@ -27,6 +27,8 @@ namespace ImageDownloder
         public static IAnalysisModule analysisModule = new AnalysisModule();
         public static ICache diskCache = new DiskCache(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath + "/ImageDownloder/Cache", 0);
 
+        public static Squareup.Picasso.ICache memoryCache = new MyPicasso.MyCache();
+
         public static bool IsRunning = true;
 
         public static string UidGenerator() => Guid.NewGuid().ToString();
@@ -55,6 +57,7 @@ namespace ImageDownloder
         }
 
         public const int DefaultPic = Resource.Mipmap.Icon;//TODO: Set a new default image for viewing
+        public const int UnkownImage = Resource.Mipmap.unknownfemale;
     }
     public enum PreferedViewing
     {

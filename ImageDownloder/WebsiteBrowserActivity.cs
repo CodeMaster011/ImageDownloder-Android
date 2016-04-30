@@ -90,7 +90,33 @@ namespace ImageDownloder
             analysisModule.CancleRequest(adapter.data); //cancel all previous pending requests
 
             analysisModule.RequestStringData(UidGenerator(), hPage, this);
+
+            memoryCache.Clear();
         }
+        protected override void OnResume()
+        {
+            base.OnResume();
+
+            if (currenItemPosition != -1 && adapter.data.Length >= currenItemPosition)
+            {
+                switch (currentWebPage.Viewing)
+                {
+                    case PreferedViewing.List:
+                        contentListView.SetSelection(currenItemPosition);
+                        break;
+                    case PreferedViewing.Grid:
+                        contentGridView.SetSelection(currenItemPosition);
+                        break;
+                    default:
+                        break;
+                }
+                //contentView.SmoothScrollToPosition(currenItemPosition);
+
+                currenItemPosition = -1;
+
+            }
+        }
+        Intent websiteImageViewer = null;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -107,6 +133,10 @@ namespace ImageDownloder
             adapter = new BrowserListAdapter(null, this) { liv = contentListView };
 
             
+            
+
+
+            websiteImageViewer = new Intent(this, typeof(WebsiteImageViewActivity));
 
             switch (currentWebPage.Viewing)
             {
@@ -145,24 +175,24 @@ namespace ImageDownloder
         private void ContentView_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
             var webpageData = adapter.data[e.Position];
-            if (webpageData.IsFinal && webpageData.underlayingLinkReader!=null)
+            var nextPageReader = currentWebPage.OnClickCallback(webpageData);
+
+            if (webpageData.IsFinal && nextPageReader != null)
             {
-                analysisModule.RequestStringData(UidGenerator(), MoveToWebpage(webpageData.underlayingLinkReader, e.Position), this);
+                analysisModule.RequestStringData(UidGenerator(), MoveToWebpage(nextPageReader, e.Position), this);
                 currenItemPosition = 0;
             }
             else if (currentWebPage.IsOnClickBigImage)
             {
                 try
-                {                    
+                {
                     currenItemPosition = e.Position;
 
                     albumImages = ((IBigImageCollectionHolder)currentWebPage).AlbumImages;
-                    var websiteImageViewer = new Intent(this, typeof(WebsiteImageViewActivity));
+
                     StartActivity(websiteImageViewer);
                 }
-                catch (System.Exception ex)
-                {
-                }
+                catch (System.Exception) { }
             }
         }
 
@@ -229,7 +259,7 @@ namespace ImageDownloder
                 //vHolder.imageView.SetImageBitmap(imageProvider.GetBitmapThumbnail(data.ImageUrl));//Grab image from ImageProvider using URL for better user experience
 
                 if (data.ImageUrl!=string.Empty)
-                    Picasso.With(context).Load(data.ImageUrl).Into(vHolder.imageView);
+                    Picasso.With(context).Load(data.ImageUrl).Placeholder(UnkownImage).Into(vHolder.imageView);
                 else
                     vHolder.imageView.SetImageResource(DefaultPic);
 
