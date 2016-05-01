@@ -17,15 +17,17 @@ namespace ImageDownloder
         public static int historyObjCount = 0;
         public static int requestPacketCount = 0;
 
+        public static int currentState = 1;
 
         public static System.Drawing.Size screenSize = new System.Drawing.Size();
 
         public static Context webBrowserContext = null;
-        public static Action<int> NotifyDataUpdate = null;
-        public static List<ImageDefinition> albumImages = null;
 
+        public static float NextPageLoadingIndex = 0.5F;
+        public static float NextPageLoadingIndexBig = 0.9F;
         public static IWebPageReader currentWebPage = null;
         public static int currenItemPosition = -1;
+        public static WebPageData[] cachedData = null;
         public static Stack<HistoryObject> history = new Stack<HistoryObject>();
 
         public static IOnlineModule onlineModule = new OnlineModule();
@@ -39,9 +41,9 @@ namespace ImageDownloder
 
         public static string UidGenerator() => Guid.NewGuid().ToString();
 
-        public static IWebPageReader MoveToWebpage(IWebPageReader webpage, int currenItemPosition = 0)
+        public static IWebPageReader MoveToWebpage(IWebPageReader webpage, WebPageData[] cachedData, int currenItemPosition = 0)
         {
-            if(currentWebPage!=null) history.Push(new HistoryObject(currentWebPage,currenItemPosition));
+            if(currentWebPage!=null) history.Push(new HistoryObject(currentWebPage, cachedData, currenItemPosition));
             currentWebPage = webpage;
             return webpage;
         }
@@ -53,6 +55,7 @@ namespace ImageDownloder
                 var his = history.Pop();
                 currentWebPage = his.webpageReader;
                 currenItemPosition = his.clickedPosition;
+                cachedData = his.cachedData;
                 his.Dispose();
                 return currentWebPage;
             }

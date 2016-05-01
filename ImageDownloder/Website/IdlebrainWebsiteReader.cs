@@ -46,6 +46,9 @@ namespace ImageDownloder.Website
             public bool IsSimulation { get; set; } = false;
             public bool IsFragmentSubmissiable { get; } = true;
 
+            public bool IsMultiPaged { get; set; } = false;
+            public IWebPageReader GetNextPage() => null;
+
             public WebPageData[] ExtractData(HtmlDocument doc)
             {
                 if (doc == null && cached != null) return cached;   //return data from cache
@@ -113,6 +116,9 @@ namespace ImageDownloder.Website
             public bool IsOnClickBigImage { get; } = false;
             public bool IsSimulation { get; set; } = true;
             public bool IsFragmentSubmissiable { get; } = false;
+            public bool IsMultiPaged { get; set; } = false;
+
+            public IWebPageReader GetNextPage() => null;
 
             public string content { get; set; } = string.Empty;
 
@@ -167,6 +173,17 @@ namespace ImageDownloder.Website
             public bool IsDownloadRequired { get; set; } = true;
             public bool IsSimulation { get; set; } = false;
 
+
+            public bool IsMultiPaged { get; set; } = false;
+
+            //http://www.idlebrain.com/movie/photogallery/aksha21/index.html
+            private int pageIndex = 1;
+            public IWebPageReader GetNextPage()
+            {
+                ChangeUrl($"http://www.idlebrain.com/movie/photogallery/aksha{pageIndex++}/index.html");
+                return this;
+            }
+
             public WebPageData[] ExtractData(HtmlDocument doc)
             {
                 AlbumImages.Clear();
@@ -192,7 +209,6 @@ namespace ImageDownloder.Website
 
                     var singleData = WebPageData.GetTextOnly($"{index++}", "");
                     singleData.IsFinal = true;
-                    singleData.Index = index;
                     singleData.UID = UidGenerator();
 
                     singleData.ImageUrl = thSrc;    //image link

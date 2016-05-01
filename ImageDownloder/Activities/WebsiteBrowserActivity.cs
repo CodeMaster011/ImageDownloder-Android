@@ -21,58 +21,83 @@ namespace ImageDownloder
         private ListView contentListView = null;
         private GridView contentGridView = null;
         private BrowserListAdapter adapter = null;
+        private const int WebsiteImageViewRequestCode = 1;
 
-        public void RequestProcessedCallback(string uid, string requestedUrl, WebPageData[] data)
-        {            
-            RunOnUiThread(new Action(() => {
-                adapter.data = data;
-                adapter.NotifyDataSetChanged();
+        public bool IsNextPageRequestSent = false;
 
+        private void restoreCurrentPosition()
+        {
+            if (currenItemPosition != -1 && adapter?.data?.Length >= currenItemPosition)
+            {
                 switch (currentWebPage.Viewing)
                 {
                     case PreferedViewing.List:
-                        if (contentListView.Visibility != ViewStates.Visible)
-                        {
-                            contentListView.Visibility = ViewStates.Visible;
-                            contentGridView.Visibility = ViewStates.Gone;
-                            contentListView.Adapter = adapter;
-                            contentGridView.Adapter = null;
-
-                            adapter.NotifyDataSetChanged();
-                        }
+                        contentListView.SetSelection(currenItemPosition);
                         break;
                     case PreferedViewing.Grid:
-                        if (contentGridView.Visibility != ViewStates.Visible)
-                        {
-                            contentGridView.Visibility = ViewStates.Visible;
-                            contentListView.Visibility = ViewStates.Gone;
-                            contentGridView.Adapter = adapter;
-                            contentListView.Adapter = null;
-
-                            adapter.NotifyDataSetChanged();
-                        }
+                        contentGridView.SetSelection(currenItemPosition);
                         break;
                     default:
                         break;
                 }
+                //contentView.SmoothScrollToPosition(currenItemPosition);
 
-                if (currenItemPosition != -1 && data.Length >= currenItemPosition)
-                {
-                    switch (currentWebPage.Viewing)
+                currenItemPosition = -1;
+            }
+        }
+
+        private void restoreContainer()
+        {
+            switch (currentWebPage.Viewing)
+            {
+                case PreferedViewing.List:
+                    if (contentListView.Visibility != ViewStates.Visible)
                     {
-                        case PreferedViewing.List:
-                            contentListView.SetSelection(currenItemPosition);
-                            break;
-                        case PreferedViewing.Grid:
-                            contentGridView.SetSelection(currenItemPosition);
-                            break;
-                        default:
-                            break;
-                    }
-                     //contentView.SmoothScrollToPosition(currenItemPosition);
+                        contentListView.Visibility = ViewStates.Visible;
+                        contentGridView.Visibility = ViewStates.Gone;
+                        contentListView.Adapter = adapter;
+                        contentGridView.Adapter = null;
 
-                    currenItemPosition = -1;
-                }
+                        adapter.NotifyDataSetChanged();
+                    }
+                    break;
+                case PreferedViewing.Grid:
+                    if (contentGridView.Visibility != ViewStates.Visible)
+                    {
+                        contentGridView.Visibility = ViewStates.Visible;
+                        contentListView.Visibility = ViewStates.Gone;
+                        contentGridView.Adapter = adapter;
+                        contentListView.Adapter = null;
+
+                        adapter.NotifyDataSetChanged();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public void RequestProcessedCallback(string uid, string requestedUrl, WebPageData[] data)
+        {
+            WebPageData[] newData = null;
+            if (IsNextPageRequestSent)
+            {
+                newData = new WebPageData[adapter.data.Length + data.Length];
+                adapter.data.CopyTo(newData, 0);
+                data.CopyTo(newData, adapter.data.Length);
+
+                IsNextPageRequestSent = false;
+            }
+
+            RunOnUiThread(new Action(() => {
+
+                adapter.data = newData != null ? newData : data;
+
+                adapter.NotifyDataSetChanged();
+
+                restoreContainer();
+                restoreCurrentPosition();
+
                 //contentView.Invalidate();
             }));
         }
@@ -89,7 +114,14 @@ namespace ImageDownloder
 
             analysisModule.CancleRequest(adapter.data); //cancel all previous pending requests
 
-            analysisModule.RequestStringData(UidGenerator(), hPage, this);
+            currentState = currentState - 1;
+
+            IsNextPageRequestSent = false;
+
+            adapter.data = cachedData;
+            adapter.NotifyDataSetChanged();
+            restoreContainer();
+            restoreCurrentPosition();
 
             memoryCache.Clear();
 
@@ -165,22 +197,25 @@ namespace ImageDownloder
             analysisModule.RequestStringData(UidGenerator(), currentWebPage, this);    //make the request to analysisModule for first time
 
             contentListView.ItemClick += ContentView_ItemClick; //on click
-            contentGridView.ItemClick += ContentView_ItemClick; //on click
-
-            NotifyDataUpdate = new Action<int>((int position) => {
-                RunOnUiThread(new Action(() => { adapter.NotifyDataSetChanged(); }));                
-            });
-            
+            contentGridView.ItemClick += ContentView_ItemClick; //on click            
         }
 
         private void ContentView_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
             var webpageData = adapter.data[e.Position];
+            
+            IsNextPageRequestSent = false;
             var nextPageReader = currentWebPage.OnClickCallback(webpageData);
+
+            currentState = currentState + 1;
 
             if (webpageData.IsFinal && nextPageReader != null)
             {
-                analysisModule.RequestStringData(UidGenerator(), MoveToWebpage(nextPageReader, e.Position), this);
+                analysisModule.RequestStringData(UidGenerator(), MoveToWebpage(nextPageReader, adapter.data, e.Position), this);
+
+                adapter.data = new WebPageData[] { WebPageData.GetFakeData() };
+                adapter.NotifyDataSetChanged();
+
                 currenItemPosition = 0;
             }
             else if (currentWebPage.IsOnClickBigImage)
@@ -189,27 +224,37 @@ namespace ImageDownloder
                 {
                     currenItemPosition = e.Position;
 
-                    albumImages = ((IBigImageCollectionHolder)currentWebPage).AlbumImages;
+                    cachedData = adapter.data;
 
-                    StartActivity(websiteImageViewer);
+                    //StartActivity(websiteImageViewer);
+                    StartActivityForResult(websiteImageViewer, WebsiteImageViewRequestCode);
                 }
                 catch (System.Exception) { }
             }
         }
 
-        protected override void OnSaveInstanceState(Bundle outState)
+        protected override void OnActivityResult(int requestCode, [GeneratedEnum] Result resultCode, Intent data)
         {
-            base.OnSaveInstanceState(outState);
+            base.OnActivityResult(requestCode, resultCode, data);
+
+            if (requestCode == WebsiteImageViewRequestCode && resultCode == Result.Ok)
+            {
+                var isDataChanged = data.GetBooleanExtra("IsDataChange", true);
+                if (isDataChanged)
+                {
+                    adapter.data = cachedData;
+                    adapter.NotifyDataSetChanged();
+                }
+            }
         }
 
-        
 
         class BrowserListAdapter : BaseAdapter
         {
             public WebPageData[] data { get; set; } = null;
 
             public ListView liv { get; set; } = null;
-            private Context context = null;
+            private WebsiteBrowserActivity parent = null;
 
             public override int Count
             {
@@ -255,12 +300,8 @@ namespace ImageDownloder
                 vHolder.mainTextView.Text = data.mainText;
                 vHolder.subTextView.Text = data.subText;
 
-                //if (data.drawable != null) vHolder.imageView.SetImageBitmap(data.drawable);
-                //else vHolder.imageView.SetImageResource(DefaultPic);
-                //vHolder.imageView.SetImageBitmap(imageProvider.GetBitmapThumbnail(data.ImageUrl));//Grab image from ImageProvider using URL for better user experience
-
                 if (data.ImageUrl!=string.Empty)
-                    Picasso.With(context).Load(data.ImageUrl).Resize(128,128).CenterInside().Into(vHolder.imageView);
+                    Picasso.With(parent.Context).Load(data.ImageUrl).Resize(128,128).CenterInside().Into(vHolder.imageView);
                 else
                     vHolder.imageView.SetImageResource(DefaultPic);
 
@@ -270,14 +311,28 @@ namespace ImageDownloder
                 if (data.subText == string.Empty) vHolder.subTextView.Visibility = ViewStates.Gone;
                 else vHolder.subTextView.Visibility = ViewStates.Visible;
 
-                //Android.Util.Log.Debug("UI", parent.Id == liv.Id ? "ListView" : "Grid Called ===================================");
+                if (!this.parent.IsNextPageRequestSent && currentWebPage.IsMultiPaged)
+                {
+                    float indexReched = (float) position / this.data.Length;
+                    if (indexReched >= NextPageLoadingIndex)
+                    {
+                        var nextPage = currentWebPage.GetNextPage();
+                        if (nextPage != null)
+                        {
+                            analysisModule.RequestStringData(UidGenerator(), nextPage, this.parent);
+                            this.parent.IsNextPageRequestSent = true;
+                        }                        
+                    }
+                }
 
+
+                //Android.Util.Log.Debug("UI", parent.Id == liv.Id ? "ListView" : "Grid Called ===================================");
                 return convertView;
             }
-            public BrowserListAdapter(WebPageData[] data, Context context)
+            public BrowserListAdapter(WebPageData[] data, WebsiteBrowserActivity parent)
             {
                 this.data = data;
-                this.context = context;
+                this.parent = parent;
             }
         }
 

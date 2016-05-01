@@ -42,7 +42,14 @@ namespace ImageDownloder
                 MyGlobal.screenSize = new System.Drawing.Size(size.X, size.Y);
 
                 MyPicasso.CreateNewPicasso(ApplicationContext);
-                MyGlobal.MoveToWebpage(new Website.IdlebrainWebsiteReader().IndexPageReader);
+
+
+                //MyGlobal.MoveToWebpage(new Website.IdlebrainWebsiteReader().IndexPageReader, null, 0);
+                MyGlobal.MoveToWebpage(
+                    new Core.Architecture.WebsiteHandler(new Website.IndiancinemagalleryWebsiteArchitecture()).Start(), 
+                    null, 0);
+
+
                 var websiteBrowser = new Intent(this, typeof(WebsiteBrowserActivity));
                 StartActivity(websiteBrowser);
                 

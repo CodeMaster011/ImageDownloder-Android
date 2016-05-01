@@ -9,7 +9,6 @@ using Android.Graphics.Drawables;
 
 namespace ImageDownloder
 {
-    //TODO: Design the 4 layer architecture of website processing
     public interface IWebsiteReader
     {
         IWebPageReader HomePageReader { get; }
@@ -22,10 +21,12 @@ namespace ImageDownloder
         bool IsPrefereOffline { get; }
         bool IsDownloadRequired { get; set; }
         bool IsSimulation { get; set; }
-        bool IsOnClickBigImage { get; }        
+        bool IsOnClickBigImage { get; }
+        bool IsMultiPaged { get; }
 
         IWebPageReader OnClickCallback(WebPageData item);
         WebPageData[] ExtractData(HtmlDocument doc);
+        IWebPageReader GetNextPage();
     }
     public interface IBigImageCollectionHolder
     {
@@ -35,8 +36,7 @@ namespace ImageDownloder
     public class WebPageData : IDisposable
     {
         //public Bitmap drawable { get; set; } = null;    
-        public string ImageUrl { get; set; } = string.Empty;
-        public int Index { get; set; } = 0;
+        public string ImageUrl { get; set; } = string.Empty;        
         public string UID { get; set; } = string.Empty;
         public string mainText { get; set; } = string.Empty;
         public string subText { get; set; } = string.Empty;

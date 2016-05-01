@@ -135,7 +135,7 @@ namespace ImageDownloder
                         case RequestPacketRequestTypes.Str:
                             if (!reqObj.WebpageReader.IsSimulation)
                             {
-                                initialResponse(reqObj);
+                                //initialResponse(reqObj);
                                 offlineModule.RequestData(reqObj, this);
                             }
                             else

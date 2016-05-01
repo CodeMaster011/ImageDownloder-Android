@@ -63,24 +63,30 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Helper.cs" />
-    <Compile Include="IAnalysisModule.cs" />
-    <Compile Include="DiskCache.cs" />
-    <Compile Include="IOfflineModule.cs" />
-    <Compile Include="IOnlineModule.cs" />
-    <Compile Include="IWebsiteReader.cs" />
-    <Compile Include="MainActivity.cs" />
-    <Compile Include="MyGlobal.cs" />
-    <Compile Include="MyPicasso.cs" />
-    <Compile Include="Others.cs" />
-    <Compile Include="RequestPacket.cs" />
+    <Compile Include="Core\Architecture\ListOfAlbumReader.cs" />
+    <Compile Include="Core\Architecture\ListOfImagesReader.cs" />
+    <Compile Include="Core\Architecture\ListOfPersonReader.cs" />
+    <Compile Include="Core\Architecture\WebsiteHandler.cs" />
+    <Compile Include="Core\Helper.cs" />
+    <Compile Include="Core\IAnalysisModule.cs" />
+    <Compile Include="Core\DiskCache.cs" />
+    <Compile Include="Core\IOfflineModule.cs" />
+    <Compile Include="Core\IOnlineModule.cs" />
+    <Compile Include="Core\IWebsiteReader.cs" />
+    <Compile Include="Activities\MainActivity.cs" />
+    <Compile Include="Core\MyGlobal.cs" />
+    <Compile Include="Core\MyPicasso.cs" />
+    <Compile Include="Core\Others.cs" />
+    <Compile Include="Core\RequestPacket.cs" />
+    <Compile Include="Core\Architecture\WebsiteArchitecture.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RunOnUI.cs" />
-    <Compile Include="WebsiteBrowserActivityAdvance.cs" />
-    <Compile Include="WebsiteBrowserActivity.cs" />
-    <Compile Include="WebsiteImageViewActivity.cs" />
+    <Compile Include="Core\RunOnUI.cs" />
+    <Compile Include="Activities\WebsiteBrowserActivityAdvance.cs" />
+    <Compile Include="Activities\WebsiteBrowserActivity.cs" />
+    <Compile Include="Activities\WebsiteImageViewActivity.cs" />
     <Compile Include="Website\IdlebrainWebsiteReader.cs" />
+    <Compile Include="Website\IndiancinemagalleryWebsiteArchitecture.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

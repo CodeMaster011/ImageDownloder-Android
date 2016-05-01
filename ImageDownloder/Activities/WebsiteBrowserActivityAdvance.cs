@@ -48,10 +48,10 @@ namespace ImageDownloder
             //==============================GLOBAL ITEM=================================
             webBrowserContext = this;
 
-            NotifyDataUpdate = new Action<int>((int position) =>
-            {
-                RunOnUiThread(new Action(() => { recyAdapter.NotifyDataSetChanged(); }));
-            });
+            //NotifyDataUpdate = new Action<int>((int position) =>
+            //{
+            //    RunOnUiThread(new Action(() => { recyAdapter.NotifyDataSetChanged(); }));
+            //});
 
             analysisModule.RequestStringData(UidGenerator(), currentWebPage, this);    //make the request to analysisModule for first time
             //==========================================================================
@@ -77,7 +77,7 @@ namespace ImageDownloder
 
             if (webpageData.IsFinal && nextPageReader != null)
             {
-                analysisModule.RequestStringData(UidGenerator(), MoveToWebpage(nextPageReader, position), this);
+                analysisModule.RequestStringData(UidGenerator(), MoveToWebpage(nextPageReader, recyAdapter.data,position), this);
                 currenItemPosition = 0;
             }
             //else if (currentWebPage.IsOnClickBigImage)

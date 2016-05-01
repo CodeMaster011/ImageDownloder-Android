@@ -24,10 +24,14 @@ using Android.Util;
 namespace ImageDownloder
 {
     [Android.App.Activity(Label = "WebsiteBrowserActivity")]
-    class WebsiteImageViewActivity: FragmentActivity
+    class WebsiteImageViewActivity: FragmentActivity, IUiResponseHandler
     {
         private ViewPager vPager = null;
-        private PagerAdapter pAdapter = null;
+        private P_Ad pAdapter = null;
+        private bool isDataChanged = false;
+        
+
+        public bool IsNextPageRequestSent = false;
 
         public override void OnBackPressed()
         {
@@ -40,6 +44,12 @@ namespace ImageDownloder
 
             Android.Util.Log.Debug("WebsiteImageViewActivity",
                 $"Request Packet ={MyGlobal.requestPacketCount}, History Obj ={MyGlobal.historyObjCount}");
+
+            currentState = currentState - 1;
+
+            Intent intent = new Intent();
+            intent.PutExtra("IsDataChange", isDataChanged);
+            SetResult(Android.App.Result.Ok, intent);
 
             Finish();
 
@@ -54,16 +64,47 @@ namespace ImageDownloder
 
             vPager = FindViewById<ViewPager>(Resource.Id.viewPager);
 
-            pAdapter = new P_Ad() { context = this };//new PageAdapter(SupportFragmentManager);
+            
+
+            pAdapter = new P_Ad() { context = this , parent = this};//new PageAdapter(SupportFragmentManager);
             vPager.OffscreenPageLimit = 0;
+            pAdapter.albumImages = ((IBigImageCollectionHolder)currentWebPage).AlbumImages;
             vPager.Adapter = pAdapter;
             vPager.CurrentItem = currenItemPosition;
             vPager.AddOnPageChangeListener((ViewPager.IOnPageChangeListener)pAdapter);
         }
-        
+
+        public void RequestProcessedCallback(string uid, string requestedUrl, WebPageData[] data)
+        {
+            if (IsNextPageRequestSent)
+            {
+                var newData = new WebPageData[cachedData.Length + data.Length];
+                cachedData.CopyTo(newData, 0);
+                data.CopyTo(newData, cachedData.Length);
+
+                cachedData = newData;
+
+                IsNextPageRequestSent = false;
+                isDataChanged = true;
+            }
+            RunOnUiThread(new Action(() =>
+            {
+                pAdapter.albumImages = ((IBigImageCollectionHolder)currentWebPage).AlbumImages;
+                pAdapter.NotifyDataSetChanged();
+            }));
+        }
+
+        public void RequestProcessingError(string uid, string requestedUrl, string error)
+        {
+            throw new NotImplementedException();
+        }
+
         class P_Ad : PagerAdapter, ViewPager.IOnPageChangeListener
         {
+            public List<ImageDefinition> albumImages { get; set; } = null;
+
             public Context context { get; set; } = null;
+            public WebsiteImageViewActivity parent { get; set; } = null;
             private Queue<ImageView> freeItem = new Queue<ImageView>();
 
             public P_Ad()
@@ -98,8 +139,6 @@ namespace ImageDownloder
                     Log.Debug("IMAGE_VIEW", "=====NEW OBJECT CREATED========");
                 }
 
-                //Picasso.With(context).Load(albumImages[position].thumbnil).Priority(Picasso.Priority.High).Into(imageView, 
-                //    new C_CC() { imageView = imageView, originalUrl = albumImages[position].original });
                 Picasso.With(context).Load(albumImages[position].thumbnil).Resize(128, 128).CenterInside().Priority(Picasso.Priority.High).Into(imageView);
                 Picasso.With(context).Load(albumImages[position].original).Resize(screenSize.Width,screenSize.Height).CenterInside().NoPlaceholder().Into(imageView);
                                 
@@ -117,6 +156,22 @@ namespace ImageDownloder
                     Picasso.With(context).Load(albumImages[position - 1].thumbnil).Resize(128, 128).CenterInside().Priority(Picasso.Priority.High).Fetch();
                 }
                 catch (System.Exception) { }
+
+
+                if (!this.parent.IsNextPageRequestSent && currentWebPage.IsMultiPaged)
+                {
+                    float indexReched = (float)position / this.albumImages.Count;
+                    if (indexReched >= NextPageLoadingIndexBig)
+                    {
+                        var nextPage = currentWebPage.GetNextPage();
+                        if (nextPage != null)
+                        {
+                            analysisModule.RequestStringData(UidGenerator(), nextPage, this.parent);
+                            this.parent.IsNextPageRequestSent = true;
+                        }
+                    }
+                }
+
 
                 ((ViewPager)container).AddView(imageView);
                 return imageView;
