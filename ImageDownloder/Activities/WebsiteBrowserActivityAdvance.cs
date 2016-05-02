@@ -77,7 +77,7 @@ namespace ImageDownloder
 
             if (webpageData.IsFinal && nextPageReader != null)
             {
-                analysisModule.RequestStringData(UidGenerator(), MoveToWebpage(nextPageReader, recyAdapter.data,position), this);
+                analysisModule.RequestStringData(UidGenerator(), MoveToWebpage(nextPageReader, recyAdapter.data, this.Title,position), this);
                 currenItemPosition = 0;
             }
             //else if (currentWebPage.IsOnClickBigImage)

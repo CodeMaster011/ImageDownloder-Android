@@ -43,7 +43,13 @@ namespace ImageDownloder
         //public IWebPageReader underlayingLinkReader { get; set; } = null;
         public bool IsFinal { get; set; } = false;
         public object Tag { get; set; } = null;
+        public string color { get; set; } = "#005043";
+        public int NoOfItemsIncluded { get; set; } = -1;
 
+        public WebPageData()
+        {
+            this.color = GetRandomComicColor();
+        }
         public static WebPageData GetFakeData()
         {
             WebPageData data = new WebPageData() { IsFinal = false };

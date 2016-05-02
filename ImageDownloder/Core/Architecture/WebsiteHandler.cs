@@ -186,9 +186,8 @@ namespace ImageDownloder.Core.Architecture
                         singleData.IsFinal = true;
                         singleData.ImageUrl = person.ImageUrl;
                         singleData.mainText = person.Name;
-                        singleData.subText = (person.Description == string.Empty ? "" : person.Description + "\n")
-                              + (person.NoOfAlbums == -1 ? "" : "Contains: " + person.NoOfAlbums.ToString());
-
+                        singleData.subText = (person.Description == string.Empty ? "" : person.Description);
+                        singleData.NoOfItemsIncluded = person.NoOfAlbums;
                         singleData.UID = MyGlobal.UidGenerator();
                         singleData.Tag = person;
 
@@ -212,9 +211,8 @@ namespace ImageDownloder.Core.Architecture
                         singleData.ImageUrl = album.ImageUrl;
                         singleData.mainText = album.Name;
 
-                        singleData.subText = (album.Description == string.Empty ? "" : album.Description + "\n")
-                              + (album.NoOfImages == -1 ? "" : "Contains: " + album.NoOfImages.ToString());
-
+                        singleData.subText = (album.Description == string.Empty ? "" : album.Description);
+                        singleData.NoOfItemsIncluded = album.NoOfImages;
                         singleData.UID = MyGlobal.UidGenerator();
                         singleData.Tag = album;
 

@@ -68,15 +68,17 @@ namespace ImageDownloder
                                 }
                                 else
                                 {
+                                    onlineModule.RequestData(reqPacket.Clone() as RequestPacket, this); //refresh data
+
                                     //data exist in cache
                                     reqPacket.DataInString = resultStr;   //add result
-                                    pendingResponse.Enqueue(reqPacket); //add to response queue
+                                    pendingResponse.Enqueue(reqPacket); //add to response queue                                    
                                 }
                             }
                             else
                             {
                                 onlineModule.RequestData(reqPacket, this);
-                            }
+                            }                            
                             break;
                         case RequestPacketRequestTypes.Img:
                             var resultBmp = diskCache.GetBitmap(reqURL);

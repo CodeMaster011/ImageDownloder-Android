@@ -17,7 +17,13 @@
         android:stretchMode="spacingWidthUniform"
         android:visibility="gone"
         android:columnWidth="128px"
-        android:background="@android:color/black" />
+        android:background="@android:color/black"
+        android:scrollbarSize="5dp"
+        android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
+        android:scrollbarTrackVertical="@drawable/scrollbar_track"
+        android:scrollIndicators="bottom"
+        android:fadeScrollbars="false" />
     <ListView
         android:minWidth="25px"
         android:minHeight="25px"
@@ -25,8 +31,14 @@
         android:layout_height="match_parent"
         android:id="@+id/contentListView"
         android:visibility="gone"
-        android:background="@android:color/black"
+        android:background="#6c63d0"
         android:divider="@drawable/item_border"
-        android:dividerHeight="2dp"
-        android:scrollbarSize="5dp" />
+        android:dividerHeight="3dp"
+        android:scrollbarSize="5dp"
+        android:scrollbars="vertical"
+        android:scrollbarThumbVertical="@drawable/scrollbar_thumb"
+        android:scrollbarTrackVertical="@drawable/scrollbar_track"
+        android:scrollIndicators="bottom"
+        android:fadeScrollbars="false"
+        android:clipToPadding="false" />
 </LinearLayout>

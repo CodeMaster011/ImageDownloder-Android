@@ -123,6 +123,11 @@
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\mipmap-hdpi\unknownfemale.png" />
+    <AndroidResource Include="Resources\drawable\scrollbar_thumb.xml" />
+    <AndroidResource Include="Resources\drawable\scrollbar_track.xml">
+      <SubType>Designer</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\drawable\shade_effect.xml" />
     <Content Include="ToDoList.txt" />
   </ItemGroup>
   <ItemGroup>

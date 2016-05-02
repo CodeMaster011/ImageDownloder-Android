@@ -1,21 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="horizontal"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@android:color/black">
-    <ImageView
-        android:src="@android:drawable/ic_menu_gallery"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/imageView1" />
+    android:background="@android:color/black"
+    android:clipToPadding="false"
+    android:elevation="2dp">
     <LinearLayout
         android:orientation="vertical"
         android:minWidth="25px"
         android:minHeight="25px"
-        android:layout_width="wrap_content"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:id="@+id/comicContainerLinearLayout"
+        android:gravity="center_vertical"
+        android:paddingRight="2dp">
+        <TextView
+            android:text="WW"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/comicTextView"
+            android:gravity="center"
+            android:textSize="30sp"
+            android:textColor="#e6e6fa" />
+        <TextView
+            android:text="9999"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/numberOfItemIncludedTextView"
+            android:gravity="right"
+            android:textSize="15sp"
+            android:textColor="#e6e6fa" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="vertical"
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/linearLayout1">
+        android:id="@+id/linearLayout1"
+        android:paddingLeft="5dp">
         <TextView
             android:text="Medium Text"
             android:textAppearance="?android:attr/textAppearanceMedium"

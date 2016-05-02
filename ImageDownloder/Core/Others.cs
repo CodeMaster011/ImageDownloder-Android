@@ -19,12 +19,14 @@ namespace ImageDownloder
         public IWebPageReader webpageReader { get; private set; } = null;
         public WebPageData[] cachedData { get; private set; } = null;
         public int clickedPosition { get; private set; } = 0;
+        public string title { get; private set; }
 
-        public HistoryObject(IWebPageReader webpageReader, WebPageData[] cachedData,int clickedPosition)
+        public HistoryObject(IWebPageReader webpageReader, WebPageData[] cachedData,string title, int clickedPosition)
         {
             this.webpageReader = webpageReader;
             this.clickedPosition = clickedPosition;
             this.cachedData = cachedData;
+            this.title = title;
 
             Android.Util.Log.Debug("HistoryObject", $"Created {++MyGlobal.historyObjCount}");
         }

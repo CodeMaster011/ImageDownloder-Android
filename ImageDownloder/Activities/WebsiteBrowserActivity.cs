@@ -115,6 +115,7 @@ namespace ImageDownloder
             analysisModule.CancleRequest(adapter.data); //cancel all previous pending requests
 
             currentState = currentState - 1;
+            this.Title = title;
 
             IsNextPageRequestSent = false;
 
@@ -211,7 +212,8 @@ namespace ImageDownloder
 
             if (webpageData.IsFinal && nextPageReader != null)
             {
-                analysisModule.RequestStringData(UidGenerator(), MoveToWebpage(nextPageReader, adapter.data, e.Position), this);
+                analysisModule.RequestStringData(UidGenerator(), MoveToWebpage(nextPageReader, adapter.data,this.Title, e.Position), this);
+                title = this.Title = webpageData.mainText;
 
                 adapter.data = new WebPageData[] { WebPageData.GetFakeData() };
                 adapter.NotifyDataSetChanged();
@@ -300,13 +302,27 @@ namespace ImageDownloder
                 vHolder.mainTextView.Text = data.mainText;
                 vHolder.subTextView.Text = data.subText;
 
-                if (data.ImageUrl!=string.Empty)
-                    Picasso.With(parent.Context).Load(data.ImageUrl).Resize(128,128).CenterInside().Into(vHolder.imageView);
+                if (vHolder.imageView != null)
+                {
+                    if (data.ImageUrl != string.Empty)
+                        Picasso.With(parent.Context).Load(data.ImageUrl).Resize(128, 128).CenterInside().Into(vHolder.imageView);
+                    else
+                        vHolder.imageView.SetImageResource(DefaultPic);
+                }
                 else
-                    vHolder.imageView.SetImageResource(DefaultPic);
+                {
+                    vHolder.comicContainerLinearLayout?.SetBackgroundColor(Android.Graphics.Color.ParseColor(data.color));
+                    vHolder.comicTextView.Text = data.mainText[0].ToString() + data.mainText[1].ToString();
+                    if (data.NoOfItemsIncluded != -1)
+                    {
+                        vHolder.noOfItemIncludedTextView.Visibility = ViewStates.Visible;
+                        vHolder.noOfItemIncludedTextView.Text = data.NoOfItemsIncluded.ToString();
+                    }else
+                        vHolder.noOfItemIncludedTextView.Visibility = ViewStates.Gone;
+                }                
 
-                if (!data.IsFinal) vHolder.mainTextView.SetTextColor(Android.Graphics.Color.Red);
-                else vHolder.mainTextView.SetTextColor(Android.Graphics.Color.White);
+                //if (!data.IsFinal) vHolder.mainTextView.SetTextColor(Android.Graphics.Color.Red);
+                //else vHolder.mainTextView.SetTextColor(Android.Graphics.Color.White);
 
                 if (data.subText == string.Empty) vHolder.subTextView.Visibility = ViewStates.Gone;
                 else vHolder.subTextView.Visibility = ViewStates.Visible;
@@ -338,8 +354,9 @@ namespace ImageDownloder
 
         class VAdapterViewHolder : Java.Lang.Object
         {
-            public TextView mainTextView, subTextView;
-            public ImageView imageView;
+            public TextView mainTextView = null, subTextView = null, noOfItemIncludedTextView = null, comicTextView = null;
+            public ImageView imageView = null;
+            public LinearLayout comicContainerLinearLayout = null;
 
             public VAdapterViewHolder(View view)
             {
@@ -348,7 +365,9 @@ namespace ImageDownloder
                     case PreferedViewing.List:
                         mainTextView = view.FindViewById<TextView>(Resource.Id.mainTextView);
                         subTextView = view.FindViewById<TextView>(Resource.Id.subTextView);
-                        imageView = view.FindViewById<ImageView>(Resource.Id.imageView1);
+                        noOfItemIncludedTextView = view.FindViewById<TextView>(Resource.Id.numberOfItemIncludedTextView);
+                        comicTextView = view.FindViewById<TextView>(Resource.Id.comicTextView);
+                        comicContainerLinearLayout = view.FindViewById<LinearLayout>(Resource.Id.comicContainerLinearLayout);
                         break;
                     case PreferedViewing.Grid:
                         mainTextView = view.FindViewById<TextView>(Resource.Id.mainTextViewG);

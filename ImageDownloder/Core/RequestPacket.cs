@@ -262,6 +262,8 @@ namespace ImageDownloder
                 {
                     n.Add(item.Key, item.Value);
                 }
+                n.requestObjs.Remove(RequestPacketUid);
+                n.Uid = MyGlobal.UidGenerator();
             }            
             return n;
         }
