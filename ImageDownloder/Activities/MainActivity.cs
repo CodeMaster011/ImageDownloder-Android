@@ -5,84 +5,120 @@ using System.Threading;
 using Android.Content;
 using System.Collections.Generic;
 using Android.Graphics;
-//https://developer.xamarin.com/recipes/android/fundamentals/activity/pass_data_between_activity/
+using Android.Views;
+using Java.Lang;
+using System;
+
 namespace ImageDownloder
 {
-	[Activity (Label = "Image Downloder", MainLauncher = true, Icon = "@mipmap/icon", ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]
+	[Activity (Label = "Image Viewer", MainLauncher = true, Icon = "@mipmap/icon", ScreenOrientation = Android.Content.PM.ScreenOrientation.Portrait)]
 	public class MainActivity : Activity
 	{
-		int count = 1;
+        private GridView gridView = null;
+        private GridViewAdapter adapter = null;
 
-        //private UiRunner uiRunner = null;
+        public List<IWebsiteReader> websiteReader = new List<IWebsiteReader>();
 
-        private Button submitButton = null;
+
         protected override void OnCreate(Bundle savedInstanceState)
         {
             base.OnCreate(savedInstanceState);
 
-            // Set our view from the "main" layout resource
             SetContentView(Resource.Layout.Main);
 
-            //uiRunner = new UiRunner();
+            Android.Views.Display display = WindowManager.DefaultDisplay;
+            Point size = new Point();
+            display.GetSize(size);
+            MyGlobal.screenSize = new System.Drawing.Size(size.X, size.Y);
 
-            // Get our button from the layout resource,
-            // and attach an event to it
-            submitButton = FindViewById<Button>(Resource.Id.myButton);
-
-            submitButton.Click += delegate
-            {
-                //Thread th = new Thread(downloadFile);
-                //th.Name = $"Download{count++}";
-                //th.Start();
-                //submitButton.Text = "Downloading...";
-
-                Android.Views.Display display = WindowManager.DefaultDisplay;
-                Point size = new Point();
-                display.GetSize(size);
-                MyGlobal.screenSize = new System.Drawing.Size(size.X, size.Y);
-
-                MyPicasso.CreateNewPicasso(ApplicationContext);
+            MyPicasso.CreateNewPicasso(ApplicationContext);
 
 
-                //MyGlobal.MoveToWebpage(new Website.IdlebrainWebsiteReader().IndexPageReader, null, 0);
-                MyGlobal.MoveToWebpage(
-                    new Core.Architecture.WebsiteHandler(new Website.IndiancinemagalleryWebsiteArchitecture()).Start(), 
-                    null, "Indiancinemagallery", 0);
+            websiteReader.Add(new Core.Architecture.WebsiteHandler(new Website.IndiancinemagalleryWebsiteArchitecture()));
+            websiteReader.Add(new Website.IdlebrainWebsiteReader());
 
+            gridView = FindViewById<GridView>(Resource.Id.mainGridView);
+            adapter = new GridViewAdapter() { parent = this };
+            gridView.Adapter = adapter;
+            gridView.ItemClick += GridView_ItemClick;
+            //MyGlobal.MoveToWebpage(
+            //        new Core.Architecture.WebsiteHandler(new Website.IndiancinemagalleryWebsiteArchitecture()).Start(),
+            //        null, "Indiancinemagallery", 0);
 
-                var websiteBrowser = new Intent(this, typeof(WebsiteBrowserActivity));
-                StartActivity(websiteBrowser);
-                
-                //var websiteBrowserAdvance = new Intent(this, typeof(WebsiteBrowserActivityAdvance));
-                //StartActivity(websiteBrowserAdvance);
-            };
-            //Environment.ExternalStorageDirectory.AbsolutePath
-            
+            //MyGlobal.MoveToWebpage(new Website.IdlebrainWebsiteReader().IndexPageReader, null, 0);
+
+            //var websiteBrowser = new Intent(this, typeof(WebsiteBrowserActivity));
+            //StartActivity(websiteBrowser);
+
         }
-        private void downloadFile()
+
+        private void GridView_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
-            string desPath = Environment.ExternalStorageDirectory.AbsolutePath + "/img.jpg";
-            if (System.IO.File.Exists(desPath)) System.IO.File.Delete(desPath);
+            var website = websiteReader[e.Position];
+            //MyGlobal.MoveToWebpage(website.IndexPageReader, null, website.Name, 0);
 
-            //var result = Helper.DownloadFile("http://virtualedge.ca/wp-content/gallery/architecture/vec-architecture-01.jpg", desPath);
-            var mResult = Helper.DownloadFile("http://www.idlebrain.com/movie/photogallery/kajalagarwal1/");
-            //http://www.idlebrain.com/movie/photogallery/kajalagarwal1/
+            MyGlobal.currentWebPage = website.IndexPageReader;
+            MyGlobal.title = website.Name;
 
-            var result = Helper.DumpDataToFile(mResult, Environment.ExternalStorageDirectory.AbsolutePath + "/page.html");
+            var websiteBrowser = new Intent(this, typeof(WebsiteBrowserActivity));
+            StartActivity(websiteBrowser);
+        }
 
-            //mHandler.NotifyDownloadCompleted(result == string.Empty ? "Download Completed" : result);
-            //mHandler.NotifyTextChange(submitButton, "Download Again");
+        class GridViewAdapter : BaseAdapter
+        {
+            public MainActivity parent { get; set; } = null;
 
-            //UiRunner.RunOnUi(new UiRunner.Action(() => {
-            //    submitButton.Text = "Download Again";
-            //    Toast.MakeText(BaseContext, result == string.Empty ? "Download Completed" : result, ToastLength.Short).Show();
-            //}));
-            UiRunner.RunOnUi(new UiRunner.Action(() => {
-                submitButton.Text = "Download Again";
-                Toast.MakeText(BaseContext, result == true ? "Download Completed and Saved." : "Error : Something went wrong.", ToastLength.Short).Show();
-            }));
-        }        
-	}
+            public override int Count
+            {
+                get
+                {
+                    return parent.websiteReader.Count;
+                }
+            }
+
+            public override Java.Lang.Object GetItem(int position)
+            {
+                return null;
+            }
+
+            public override long GetItemId(int position)
+            {
+                return position;
+            }
+
+            public override View GetView(int position, View convertView, ViewGroup parent)
+            {
+                if (convertView == null)
+                {
+                    var layoutInflator = (LayoutInflater)parent.Context.GetSystemService(Service.LayoutInflaterService);
+                    convertView = layoutInflator.Inflate(Resource.Layout.main_listview_single_item, parent, false);
+                    convertView.Tag = new ViewHolder(convertView);
+                }
+                var website = this.parent.websiteReader[position];
+
+                var vHolder = convertView.Tag as ViewHolder;
+
+                vHolder.websiteNameTextView.Text = website.Name;
+                vHolder.websiteComicLinearLayout.SetBackgroundColor(Color.ParseColor(MyGlobal.GetRandomComicColor()));
+                vHolder.websiteComicTextView.Text = website.ComicText;
+
+                return convertView;
+            }
+
+            class ViewHolder: Java.Lang.Object
+            {
+                public LinearLayout websiteComicLinearLayout = null;
+                public TextView websiteNameTextView = null, websiteComicTextView = null;
+
+                public ViewHolder(View v)
+                {
+                    websiteComicLinearLayout = v.FindViewById<LinearLayout>(Resource.Id.websiteComicLinearLayout);
+                    websiteNameTextView = v.FindViewById<TextView>(Resource.Id.websiteNameTextView);
+                    websiteComicTextView = v.FindViewById<TextView>(Resource.Id.websiteComicTextView);
+                }
+            }
+        }
+    }
 }
 
 

@@ -111,6 +111,9 @@
     <AndroidResource Include="Resources\layout\website_image_view_fragment.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
+    <AndroidResource Include="Resources\layout\main_listview_single_item.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Include="Resources\layout\Main.axml" />
@@ -128,6 +131,7 @@
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\shade_effect.xml" />
+    <AndroidResource Include="Resources\mipmap-hdpi\id_icon.ico" />
     <Content Include="ToDoList.txt" />
   </ItemGroup>
   <ItemGroup>

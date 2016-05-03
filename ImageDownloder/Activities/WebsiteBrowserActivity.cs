@@ -110,7 +110,12 @@ namespace ImageDownloder
         public override void OnBackPressed()
         {
             var hPage = BackToPreviousWebpage();
-            if (hPage == null) return;
+            if (hPage == null)
+            {
+                Finish();
+                base.OnBackPressed();
+                return;
+            }
 
             analysisModule.CancleRequest(adapter.data); //cancel all previous pending requests
 

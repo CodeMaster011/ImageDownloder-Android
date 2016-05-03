@@ -16,6 +16,9 @@ namespace ImageDownloder.Website
 {
     class IdlebrainWebsiteReader : IWebsiteReader
     {
+        public string Name { get; } = "Idlebrain";
+        public string ComicText { get; } = "Ib";
+
         public IWebPageReader HomePageReader
         {
             get

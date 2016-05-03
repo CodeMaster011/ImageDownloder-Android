@@ -17,7 +17,7 @@ namespace ImageDownloder.Website
     class IndiancinemagalleryWebsiteArchitecture : WebsiteArchitecture
     {
         public IndiancinemagalleryWebsiteArchitecture()
-            : base(new IndiancinemagalleryListOfPersonReader(), null, new IndiancinemagalleryListOfImages())
+            : base("Indiancinemagallery", "ICG" ,new IndiancinemagalleryListOfPersonReader(), null, new IndiancinemagalleryListOfImages())
         { }
         class IndiancinemagalleryListOfPersonReader : ListOfPersonReader
         {

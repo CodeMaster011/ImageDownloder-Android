@@ -3,18 +3,16 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    <Button
-        android:id="@+id/myButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/hello" />
-    <LinearLayout
-        android:orientation="vertical"
+    <GridView
         android:minWidth="25px"
         android:minHeight="25px"
         android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:id="@+id/linearLayout1"
-        android:elevation="5dp"
-        android:background="@android:color/holo_blue_bright" />
+        android:layout_height="match_parent"
+        android:id="@+id/mainGridView"
+        android:columnWidth="150dp"
+        android:horizontalSpacing="1dp"
+        android:verticalSpacing="1dp"
+        android:stretchMode="spacingWidthUniform"
+        android:numColumns="auto_fit"
+        android:paddingLeft="2dp" />
 </LinearLayout>

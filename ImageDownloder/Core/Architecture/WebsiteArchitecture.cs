@@ -17,9 +17,13 @@ namespace ImageDownloder.Core.Architecture
         public ListOfPersonReader ListOfPersonReader { get; set; } = null;
         public ListOfAlbumReader ListOfAlbumReader { get; set; } = null;
         public ListOfImagesReader ListOfImagesReader { get; set; } = null;
+        public string Name { get; set; } = string.Empty;
+        public string ComicText { get; } = string.Empty;
 
-        public WebsiteArchitecture(ListOfPersonReader ListOfPersonReader, ListOfAlbumReader ListOfAlbumReader, ListOfImagesReader ListOfImagesReader)
+        public WebsiteArchitecture(string Name, string ComicText, ListOfPersonReader ListOfPersonReader, ListOfAlbumReader ListOfAlbumReader, ListOfImagesReader ListOfImagesReader)
         {
+            this.Name = Name;
+            this.ComicText = ComicText;
             this.ListOfPersonReader = ListOfPersonReader;
             this.ListOfAlbumReader = ListOfAlbumReader;
             this.ListOfImagesReader = ListOfImagesReader;

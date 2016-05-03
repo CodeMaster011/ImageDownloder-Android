@@ -13,7 +13,7 @@ using HtmlAgilityPack;
 
 namespace ImageDownloder.Core.Architecture
 {
-    internal sealed class WebsiteHandler : IWebPageReader, IBigImageCollectionHolder
+    internal sealed class WebsiteHandler : IWebsiteReader ,IWebPageReader, IBigImageCollectionHolder
     {
         private WebsiteArchitecture architecture = null;
         private object informationForLevel = null;
@@ -34,6 +34,13 @@ namespace ImageDownloder.Core.Architecture
         public bool IsOnClickBigImage { get { refreshConfig(); return isOnClickBigImage; } set { isOnClickBigImage = value; }  }
         public bool IsMultiPaged { get { refreshConfig(); return isMultiPaged; } set { isMultiPaged = value; } }
         public List<ImageDefinition> AlbumImages { get; set; } = new List<ImageDefinition>();
+
+        public IWebPageReader HomePageReader { get { return null; } }
+
+        public IWebPageReader IndexPageReader { get { return Start(); } }
+
+        public string Name { get { return architecture.Name; } }
+        public string ComicText { get { return architecture.ComicText; } }
 
         public WebsiteHandler(WebsiteArchitecture architecture)
         {

@@ -12,7 +12,9 @@ namespace ImageDownloder
     public interface IWebsiteReader
     {
         IWebPageReader HomePageReader { get; }
-        IWebPageReader IndexPageReader { get; }        
+        IWebPageReader IndexPageReader { get; }   
+        string Name { get; }     
+        string ComicText { get; }
     }
     public interface IWebPageReader
     {
