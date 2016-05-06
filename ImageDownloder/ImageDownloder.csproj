@@ -85,6 +85,7 @@
     <Compile Include="Activities\WebsiteBrowserActivityAdvance.cs" />
     <Compile Include="Activities\WebsiteBrowserActivity.cs" />
     <Compile Include="Activities\WebsiteImageViewActivity.cs" />
+    <Compile Include="Website\BharatStudentWebsiteArchitecture.cs" />
     <Compile Include="Website\IdlebrainWebsiteReader.cs" />
     <Compile Include="Website\IndiancinemagalleryWebsiteArchitecture.cs" />
   </ItemGroup>

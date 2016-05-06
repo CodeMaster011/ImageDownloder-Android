@@ -36,6 +36,7 @@ namespace ImageDownloder
 
             websiteReader.Add(new Core.Architecture.WebsiteHandler(new Website.IndiancinemagalleryWebsiteArchitecture()));
             websiteReader.Add(new Website.IdlebrainWebsiteReader());
+            websiteReader.Add(new Core.Architecture.WebsiteHandler(new Website.BharatStudentWebsiteArchitecture()));
 
             gridView = FindViewById<GridView>(Resource.Id.mainGridView);
             adapter = new GridViewAdapter() { parent = this };
