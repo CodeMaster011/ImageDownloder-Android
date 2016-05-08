@@ -49,4 +49,16 @@ namespace ImageDownloder
         public string thumbnil { get; set; }
         public string original { get; set; }
     }
+    public class ImageDownloadInformation
+    {
+        public ImageDefinition src { get; set; } = null;
+        public string des { get; set; } = null;
+        public string Name { get; set; } = null;
+        public string websiteName { get; set; } = null;
+        public int currentSize { get; set; } = -1;
+        public int totalSize { get; set; } = -1;
+        public bool isDownloading { get; set; } = false;
+        public bool isFailed { get; set; } = false;
+        public bool isFinished { get; set; } = false;
+    }
 }

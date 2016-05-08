@@ -31,5 +31,6 @@ namespace ImageDownloder.Core.Architecture
         public abstract string GetUrl(Album album);
         public abstract List<ImageInfo> GetImageList(Album album, HtmlAgilityPack.HtmlDocument doc);
         public virtual string GetNextPageUrl() => string.Empty;
+        public abstract List<ImageDefinition> GetImages(string url, HtmlAgilityPack.HtmlDocument doc, out string nextPageUrl);
     }
 }

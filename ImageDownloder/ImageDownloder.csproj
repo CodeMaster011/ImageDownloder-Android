@@ -16,6 +16,8 @@
     <AssemblyName>ImageDownloder</AssemblyName>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <TargetFrameworkVersion>v6.0</TargetFrameworkVersion>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -63,10 +65,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\DownloadActivity.cs" />
     <Compile Include="Core\Architecture\ListOfAlbumReader.cs" />
     <Compile Include="Core\Architecture\ListOfImagesReader.cs" />
     <Compile Include="Core\Architecture\ListOfPersonReader.cs" />
     <Compile Include="Core\Architecture\WebsiteHandler.cs" />
+    <Compile Include="Core\DownloadLinkBuilder.cs" />
     <Compile Include="Core\Helper.cs" />
     <Compile Include="Core\IAnalysisModule.cs" />
     <Compile Include="Core\DiskCache.cs" />
@@ -74,7 +78,7 @@
     <Compile Include="Core\IOnlineModule.cs" />
     <Compile Include="Core\IWebsiteReader.cs" />
     <Compile Include="Activities\MainActivity.cs" />
-    <Compile Include="Core\MyGlobal.cs" />
+    <Compile Include="MyGlobal.cs" />
     <Compile Include="Core\MyPicasso.cs" />
     <Compile Include="Core\Others.cs" />
     <Compile Include="Core\RequestPacket.cs" />
@@ -85,6 +89,7 @@
     <Compile Include="Activities\WebsiteBrowserActivityAdvance.cs" />
     <Compile Include="Activities\WebsiteBrowserActivity.cs" />
     <Compile Include="Activities\WebsiteImageViewActivity.cs" />
+    <Compile Include="Services\DownloadService.cs" />
     <Compile Include="Website\BharatStudentWebsiteArchitecture.cs" />
     <Compile Include="Website\IdlebrainWebsiteReader.cs" />
     <Compile Include="Website\IndiancinemagalleryWebsiteArchitecture.cs" />
@@ -113,6 +118,12 @@
       <SubType>AndroidResource</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\layout\main_listview_single_item.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\download.axml">
+      <SubType>AndroidResource</SubType>
+    </AndroidResource>
+    <AndroidResource Include="Resources\layout\download_listview_single_item.axml">
       <SubType>AndroidResource</SubType>
     </AndroidResource>
   </ItemGroup>

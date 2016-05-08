@@ -72,6 +72,8 @@ namespace ImageDownloder.Website
 
             public override List<ImageInfo> GetImageList(Album album, HtmlDocument doc)
             {
+                nextPageUrl = string.Empty;
+
                 var aLinksNodes = Helper.AllChild(doc.DocumentNode, "a", 
                     new SearchCritriaBuilder()
                     .AddHasChild(new ChildNode() { Name = "img" })
@@ -122,6 +124,55 @@ namespace ImageDownloder.Website
             }
 
             public override string GetUrl(Album album) => album.InformationNeedForNextLevel as string;
+
+            public override List<ImageDefinition> GetImages(string url, HtmlDocument doc, out string nextPageUrl)
+            {
+                nextPageUrl = null;
+
+                var aLinksNodes = Helper.AllChild(doc.DocumentNode, "a",
+                    new SearchCritriaBuilder()
+                    .AddHasChild(new ChildNode() { Name = "img" })
+                    .AddHasAttribute("class", "greylink")
+                    .Build());
+                if (aLinksNodes == null) return null;
+
+                var list = new List<ImageDefinition>();
+                foreach (var aNode in aLinksNodes)
+                {
+                    var imgNode = Helper.AnyChild(aNode, "img");
+                    list.Add(new ImageDefinition()
+                            {
+                                thumbnil = imgNode.GetAttributeValue("src", ""),
+                                original = imgNode.GetAttributeValue("src", "").Replace("/thumb/", "/normal/")
+                            }
+                        );
+                }
+                //td width="28%" height="30" align="right" valign="middle"
+                var pageContainer = Helper.AnyChild(doc.DocumentNode, "td", new Dictionary<string, string>()
+                {
+                    ["width"] = "28%",
+                    ["height"] = "30",
+                    ["align"] = "right",
+                    ["valign"] = "middle"
+                });
+                if (pageContainer != null)
+                {
+                    //<span class="bluepadlink">1</span>
+                    var currentPageIndex = int.Parse(Helper.AnyChild(pageContainer, "span", "bluepadlink").InnerText);
+                    //<a href="photo_gallery_2-Hindi-Actress-Ayesha_Takia-photo-galleries-1,2,6,2.php" class='greypadlink'>2</a>
+                    var allPageLinks = Helper.AllChild(pageContainer, "a");
+                    foreach (var page in allPageLinks)
+                    {
+                        if (page.InnerText == (currentPageIndex + 1).ToString())
+                        {
+                            nextPageUrl = webDirectory + page.GetAttributeValue("href", "");
+                            break;
+                        }
+                    }
+                }
+
+                return list.Count == 0 ? null : list;
+            }
         }
     }
 }

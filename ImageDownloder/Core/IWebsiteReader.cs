@@ -33,6 +33,7 @@ namespace ImageDownloder
     public interface IBigImageCollectionHolder
     {
         List<ImageDefinition> AlbumImages { get; set; }
+        List<ImageDefinition> GetImages(string url, HtmlDocument doc, out string nextPageUrl);
     }
 
     public class WebPageData : IDisposable

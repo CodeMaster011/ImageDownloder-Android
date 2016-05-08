@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:minWidth="25px"
+    android:minHeight="25px">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/linearLayout3"
+        android:gravity="right">
+        <Button
+            android:text="Pause"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/downloadPauseButton"
+            android:backgroundTint="#0D47A1"
+            android:backgroundTintMode="multiply"
+            android:textColor="#ffffff" />
+        <Button
+            android:text="Stop"
+            android:id="@+id/downloadStopButton"
+            android:backgroundTint="#B71C1C"
+            android:backgroundTintMode="multiply"
+            android:textColor="#ffffff"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:id="@+id/linearLayout1"
+        android:background="#E3F2FD"
+        android:layout_margin="10dp"
+        android:elevation="4dp"
+        android:layout_gravity="center_vertical"
+        android:visibility="gone">
+        <ImageView
+            android:src="@android:drawable/ic_menu_gallery"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:id="@+id/downloadImageView"
+            android:layout_gravity="center_vertical" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout2"
+            android:padding="4dp">
+            <TextView
+                android:text="Picture name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/downloadNameTextView"
+                android:textSize="24sp"
+                android:textColor="#de000000" />
+            <TextView
+                android:text="website"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/downloadWebsiteNameTextView"
+                android:textSize="16sp"
+                android:textColor="#8A000000" />
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/downloadProgressBar"
+                android:progress="50" />
+            <TextView
+                android:text="Downloading..."
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView3"
+                android:gravity="right"
+                android:textSize="14sp"
+                android:textColor="#de0288D1" />
+        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:id="@+id/linearLayout4"
+        android:background="#01579B" />
+    <ListView
+        android:minWidth="25px"
+        android:minHeight="25px"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/downloadListView"
+        android:padding="10dp" />
+</LinearLayout>

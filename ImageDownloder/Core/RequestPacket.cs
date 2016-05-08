@@ -296,6 +296,15 @@ namespace ImageDownloder
             return r;
         }
 
+        public static RequestPacket CreateStringPacket(string uid, string url, IWebPageReader reader, RequestPacketOwners owner)
+        {
+            var r = new RequestPacket() { RequestType = RequestPacketRequestTypes.Str, WebpageReader =reader, Uid = uid, Url = url, Owner = owner };
+
+            Android.Util.Log.Debug("RequestPacket", $"Created {++MyGlobal.requestPacketCount}");
+
+            return r;
+        }
+
         public static RequestPacket CreateStringPacket(string uid, string url, IWebPageReader reader, RequestPacketOwners owner,
             IResponseHandler analisisModuleResponse = null, IResponseHandler offlineModuleResponse = null, IResponseHandler onlineModuleResponse = null)
         {

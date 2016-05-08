@@ -38,6 +38,13 @@ namespace ImageDownloder
 
         public static MyPicasso.MyCache memoryCache = new MyPicasso.MyCache();
 
+        //Service=======================================
+        public static Services.DownloadService downloadService = null;
+        public static bool isDownloadServiceRunning = false;        
+        public static List<ImageDownloadInformation> downloadServiceData = new List<ImageDownloadInformation>();
+        public static Services.DownloadService.IOnDownloadProcess downloadListener = null;
+        //==============================================
+
         public static bool IsRunning = true;
 
         public static string UidGenerator() => Guid.NewGuid().ToString();
