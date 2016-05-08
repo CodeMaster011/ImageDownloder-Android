@@ -248,6 +248,9 @@ namespace ImageDownloder.Core.Architecture
             return data.Count == 0 ? null : data.ToArray();
         }
 
+        public List<ImageDefinition> GetImages(string url, HtmlDocument doc, out string nextPageUrl)
+        => architecture.ListOfImagesReader.GetImages(url, doc, out nextPageUrl);
+
         private static class Changer
         {
             public static Album ToAlbum(Person person)

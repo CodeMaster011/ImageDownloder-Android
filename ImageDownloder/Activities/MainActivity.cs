@@ -25,6 +25,7 @@ namespace ImageDownloder
             base.OnCreate(savedInstanceState);
 
             SetContentView(Resource.Layout.Main);
+            
 
             Android.Views.Display display = WindowManager.DefaultDisplay;
             Point size = new Point();
@@ -42,15 +43,11 @@ namespace ImageDownloder
             adapter = new GridViewAdapter() { parent = this };
             gridView.Adapter = adapter;
             gridView.ItemClick += GridView_ItemClick;
-            //MyGlobal.MoveToWebpage(
-            //        new Core.Architecture.WebsiteHandler(new Website.IndiancinemagalleryWebsiteArchitecture()).Start(),
-            //        null, "Indiancinemagallery", 0);
 
-            //MyGlobal.MoveToWebpage(new Website.IdlebrainWebsiteReader().IndexPageReader, null, 0);
-
-            //var websiteBrowser = new Intent(this, typeof(WebsiteBrowserActivity));
-            //StartActivity(websiteBrowser);
-
+            FindViewById<Button>(Resource.Id.showDownloadButton).Click += delegate
+            {
+                StartActivity(new Intent(this, typeof(Activities.DownloadActivity)));
+            };
         }
 
         private void GridView_ItemClick(object sender, AdapterView.ItemClickEventArgs e)

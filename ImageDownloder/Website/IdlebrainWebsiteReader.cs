@@ -180,11 +180,43 @@ namespace ImageDownloder.Website
             public bool IsMultiPaged { get; set; } = false;
 
             //http://www.idlebrain.com/movie/photogallery/aksha21/index.html
-            private int pageIndex = 1;
+            //private int pageIndex = 1;
             public IWebPageReader GetNextPage()
             {
-                ChangeUrl($"http://www.idlebrain.com/movie/photogallery/aksha{pageIndex++}/index.html");
+                //ChangeUrl($"http://www.idlebrain.com/movie/photogallery/aksha{pageIndex++}/index.html");
                 return this;
+            }
+
+            public List<ImageDefinition> GetImages(string url, HtmlDocument doc, out string nextPageUrl)
+            {
+                var webDir = getWebFolderPath(url);
+                nextPageUrl = null;
+
+                Dictionary<string, string> att = new Dictionary<string, string>();
+
+                att.Add("width", "100%");
+                att.Add("style", "background-color: white;");
+
+                var container = Helper.AnyChild(doc.DocumentNode, "table", att, true);
+                if (container == null) return null;
+
+                var imgNodes = Helper.AllChild(container, "img");
+                if (imgNodes == null) return null;
+
+                List<ImageDefinition> data = new List<ImageDefinition>();
+                foreach (var imgNode in imgNodes)
+                {
+                    string thSrc = (webDir.EndsWith("/") ? webDir : webDir + "/") + imgNode.GetAttributeValue("src", "");                  
+
+                    var imgDefi = new ImageDefinition()
+                    {
+                        thumbnil = thSrc,
+                        original = (webDir.EndsWith("/") ? webDir : webDir + "/") + imgNode.GetAttributeValue("src", "").Replace("th_", "")
+                    };
+
+                    data.Add(imgDefi);
+                }
+                return data;
             }
 
             public WebPageData[] ExtractData(HtmlDocument doc)

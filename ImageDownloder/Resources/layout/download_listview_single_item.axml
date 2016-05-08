@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:id="@+id/linearLayout12"
+        android:background="#E3F2FD"
+        android:elevation="4dp"
+        android:layout_gravity="center_vertical">
+        <ImageView
+            android:src="@android:drawable/ic_menu_gallery"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:id="@+id/downloadSingleImageView"
+            android:layout_gravity="center_vertical" />
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:id="@+id/linearLayout22"
+            android:padding="4dp">
+            <TextView
+                android:text="Picture name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/downloadSingleNameTextView"
+                android:textSize="24sp"
+                android:textColor="#de000000"
+                android:lines="1" />
+            <TextView
+                android:text="website"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/downloadSingleWebsiteNameTextView"
+                android:textSize="16sp"
+                android:textColor="#8A000000"
+                android:lines="1" />
+            <ProgressBar
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/downloadSingleProgressBar"
+                android:progress="50" />
+            <TextView
+                android:text="Waiting..."
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/downloadSingleStatusTextView"
+                android:gravity="bottom|right"
+                android:textSize="14sp"
+                android:textColor="#0091EA" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

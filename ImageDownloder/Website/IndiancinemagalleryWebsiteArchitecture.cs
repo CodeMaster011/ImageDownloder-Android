@@ -119,6 +119,49 @@ namespace ImageDownloder.Website
             {
                 return (string)album.InformationNeedForNextLevel;
             }
+
+            public override List<ImageDefinition> GetImages(string url, HtmlDocument doc, out string nextPageUrl)
+            {
+                nextPageUrl = null;
+
+                var container = doc.GetElementbyId("columns4");
+                if (container == null) return null;
+
+                var imgList = Helper.AllChild(container, "img");
+                if (imgList == null) return null;
+
+                List<ImageDefinition> data = new List<ImageDefinition>();
+                foreach (var img in imgList)
+                {
+                    ImageDefinition def = new ImageDefinition();
+
+                    def.thumbnil = webDirectory + img.GetAttributeValue("src", "");
+                    def.original = def.thumbnil.Replace("thumb_", "");
+
+                    data.Add(def);
+                }
+
+                var pagination = Helper.AnyChild(doc.DocumentNode, "div", "pagination");
+                if (pagination != null)
+                {
+                    bool isNextPageFound = false;
+
+                    var current = int.Parse(Helper.AnyChild(pagination, "span", "current").InnerText);
+                    var pageLinks = Helper.AllChild(pagination, "a");
+                    foreach (var page in pageLinks)
+                    {
+                        if (page.InnerText == (current + 1).ToString())
+                        {
+                            nextPageUrl = webDirectory + page.GetAttributeValue("href", "");
+                            isNextPageFound = true;
+                            break;
+                        }
+                    }
+                    if (!isNextPageFound) nextPageUrl = string.Empty;
+                }
+
+                return data;
+            }
         }
     }    
 }

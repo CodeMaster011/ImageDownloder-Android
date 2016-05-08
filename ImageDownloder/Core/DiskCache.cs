@@ -27,6 +27,7 @@ namespace ImageDownloder
         bool Remove(string url);
     }
     //TODO: Run DiskCache is different thread to get boost in IOfflineModule
+    //TODO: Re-model the idea with LucCach
     class DiskCache : ICache
     {
 

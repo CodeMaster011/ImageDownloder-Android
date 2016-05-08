@@ -12,12 +12,14 @@ using Android.Widget;
 using Java.Lang;
 using static ImageDownloder.MyGlobal;
 using Squareup.Picasso;
+using System.Threading;
 
 namespace ImageDownloder
 {
     [Activity(Label = "WebsiteBrowserActivity")]
     public class WebsiteBrowserActivity : Activity, IUiResponseHandler
     {
+        private Button downloadButton = null;
         private ListView contentListView = null;
         private GridView contentGridView = null;
         private BrowserListAdapter adapter = null;
@@ -169,7 +171,36 @@ namespace ImageDownloder
 
             contentListView = FindViewById<ListView>(Resource.Id.contentListView);
             contentGridView = FindViewById<GridView>(Resource.Id.contentGridView);
+            downloadButton = FindViewById<Button>(Resource.Id.addToDownloadButton);
+            
+            if (currentWebPage.IsOnClickBigImage)
+            {
+                //show download button
+                downloadButton.Visibility = ViewStates.Visible;
+            }
+            else
+            {
+                downloadButton.Visibility = ViewStates.Gone;
+            }
 
+            downloadButton.Click += delegate
+            {
+                var data = ((IBigImageCollectionHolder)currentWebPage).AlbumImages;
+                new Core.DownloadLinkBuilder("website", currentWebPage, data)
+                    .DownloadTo(Android.OS.Environment.ExternalStorageDirectory.AbsolutePath + "/ImageDownloder/Downloads/" + Title)
+                    .OnLoadingCompleted(new Action(() =>
+                    {
+                        RunOnUiThread(new Action(() =>
+                        {
+                            if (!isDownloadServiceRunning)
+                            {
+                                StartService(new Intent(this, typeof(Services.DownloadService)));
+                            }
+                            StartActivity(new Intent(this, typeof(Activities.DownloadActivity)));
+                        }));
+                    }))
+                    .BuildInto(ref downloadServiceData);
+            };
 
             adapter = new BrowserListAdapter(null, this) { liv = contentListView };
 
@@ -214,6 +245,16 @@ namespace ImageDownloder
             var nextPageReader = currentWebPage.OnClickCallback(webpageData);
 
             currentState = currentState + 1;
+
+            if (nextPageReader.IsOnClickBigImage)
+            {
+                //show download button
+                downloadButton.Visibility = ViewStates.Visible;
+            }
+            else
+            {
+                downloadButton.Visibility = ViewStates.Gone;
+            }
 
             if (webpageData.IsFinal && nextPageReader != null)
             {
