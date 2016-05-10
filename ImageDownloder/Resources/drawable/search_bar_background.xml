@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<bitmap
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:src="@drawable/search_active"
+    android:antialias="true"
+    android:gravity="left"
+    android:mipMap="false"
+    android:tileMode="clamp"/>

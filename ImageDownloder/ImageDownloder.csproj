@@ -78,6 +78,7 @@
     <Compile Include="Core\IOnlineModule.cs" />
     <Compile Include="Core\IWebsiteReader.cs" />
     <Compile Include="Activities\MainActivity.cs" />
+    <Compile Include="Core\SearchHandler.cs" />
     <Compile Include="MyGlobal.cs" />
     <Compile Include="Core\MyPicasso.cs" />
     <Compile Include="Core\Others.cs" />
@@ -137,13 +138,18 @@
     <AndroidResource Include="Resources\mipmap-xxxhdpi\Icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <AndroidResource Include="Resources\mipmap-hdpi\unknownfemale.png" />
+    <AndroidResource Include="Resources\drawable\unknownfemale.png" />
     <AndroidResource Include="Resources\drawable\scrollbar_thumb.xml" />
     <AndroidResource Include="Resources\drawable\scrollbar_track.xml">
       <SubType>Designer</SubType>
     </AndroidResource>
     <AndroidResource Include="Resources\drawable\shade_effect.xml" />
     <AndroidResource Include="Resources\mipmap-hdpi\id_icon.ico" />
+    <AndroidResource Include="Resources\drawable\download_icon.png" />
+    <AndroidResource Include="Resources\drawable\download_inavtive.png" />
+    <AndroidResource Include="Resources\drawable\search_active.png" />
+    <AndroidResource Include="Resources\drawable\search_inactive.png" />
+    <AndroidResource Include="Resources\drawable\search_bar_background.xml" />
     <Content Include="ToDoList.txt" />
   </ItemGroup>
   <ItemGroup>

@@ -75,7 +75,7 @@ namespace ImageDownloder
         }
 
         public const int DefaultPic = Resource.Mipmap.Icon;//TODO: Set a new default image for viewing
-        public const int UnkownImage = Resource.Mipmap.unknownfemale;
+        //public const int UnkownImage = Resource.Mipmap.unknownfemale;
 
         public static Random random = new Random(20);
         public static string[] comicColor = new string[] { "#005043","#363636", "#79464e","#303e57","#4d3939","#193713","#c56395","#1d41b7","#5f12a7","#9e12a7","#a71265","#102ab0","#107bb0","#109053","#419010","#889010","#903010" };
