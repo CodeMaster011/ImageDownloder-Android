@@ -19,7 +19,9 @@ namespace ImageDownloder
     [Activity(Label = "WebsiteBrowserActivity")]
     public class WebsiteBrowserActivity : Activity, IUiResponseHandler
     {
-        private Button downloadButton = null;
+        private Intent websiteImageViewer = null;
+        private ImageButton addToDownloadButton = null, searchButton = null;
+        private EditText searchEditText = null;
         private ListView contentListView = null;
         private GridView contentGridView = null;
         private BrowserListAdapter adapter = null;
@@ -136,6 +138,7 @@ namespace ImageDownloder
             Android.Util.Log.Debug("WebsiteImageViewActivity",
                 $"Request Packet ={MyGlobal.requestPacketCount}, History Obj ={MyGlobal.historyObjCount}");
         }
+
         protected override void OnResume()
         {
             base.OnResume();
@@ -159,7 +162,7 @@ namespace ImageDownloder
 
             }
         }
-        Intent websiteImageViewer = null;
+        
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -167,23 +170,32 @@ namespace ImageDownloder
 
             SetContentView(Resource.Layout.website_browser);
 
+            ActionBar.Hide();
+
+            websiteImageViewer = new Intent(this, typeof(WebsiteImageViewActivity));
             webBrowserContext = this;            
 
             contentListView = FindViewById<ListView>(Resource.Id.contentListView);
             contentGridView = FindViewById<GridView>(Resource.Id.contentGridView);
-            downloadButton = FindViewById<Button>(Resource.Id.addToDownloadButton);
-            
+            addToDownloadButton = FindViewById<ImageButton>(Resource.Id.addToDownloadButton);
+            searchButton = FindViewById<ImageButton>(Resource.Id.searchButton);
+            searchEditText = FindViewById<EditText>(Resource.Id.searchEditText);
+
+            adapter = new BrowserListAdapter(null, this) { liv = contentListView };
+
+            analysisModule.RequestStringData(UidGenerator(), currentWebPage, this);    //make the request to analysisModule for first time
+
             if (currentWebPage.IsOnClickBigImage)
             {
                 //show download button
-                downloadButton.Visibility = ViewStates.Visible;
+                addToDownloadButton.Visibility = ViewStates.Visible;
             }
             else
             {
-                downloadButton.Visibility = ViewStates.Gone;
+                addToDownloadButton.Visibility = ViewStates.Gone;
             }
 
-            downloadButton.Click += delegate
+            addToDownloadButton.Click += delegate
             {
                 var data = ((IBigImageCollectionHolder)currentWebPage).AlbumImages;
                 new Core.DownloadLinkBuilder("website", currentWebPage, data)
@@ -200,12 +212,7 @@ namespace ImageDownloder
                         }));
                     }))
                     .BuildInto(ref downloadServiceData);
-            };
-
-            adapter = new BrowserListAdapter(null, this) { liv = contentListView };
-
-
-            websiteImageViewer = new Intent(this, typeof(WebsiteImageViewActivity));
+            };           
 
             switch (currentWebPage.Viewing)
             {
@@ -231,11 +238,26 @@ namespace ImageDownloder
                     break;
             }
 
-            analysisModule.RequestStringData(UidGenerator(), currentWebPage, this);    //make the request to analysisModule for first time
-
             contentListView.ItemClick += ContentView_ItemClick; //on click
-            contentGridView.ItemClick += ContentView_ItemClick; //on click            
+            contentGridView.ItemClick += ContentView_ItemClick; //on click    
+
+            searchEditText.Visibility = ViewStates.Invisible;
+            searchEditText.TextChanged += SearchEditText_TextChanged;
+            searchButton.Click += SearchButton_Click;     
         }
+
+        private void SearchButton_Click(object sender, EventArgs e)
+        {
+            if (searchEditText.Visibility == ViewStates.Visible) searchEditText.Visibility = ViewStates.Invisible;
+            else searchEditText.Visibility = ViewStates.Visible;
+        }
+
+        private void SearchEditText_TextChanged(object sender, Android.Text.TextChangedEventArgs e)
+        {
+            
+        }
+
+        
 
         private void ContentView_ItemClick(object sender, AdapterView.ItemClickEventArgs e)
         {
@@ -249,11 +271,11 @@ namespace ImageDownloder
             if (nextPageReader.IsOnClickBigImage)
             {
                 //show download button
-                downloadButton.Visibility = ViewStates.Visible;
+                addToDownloadButton.Visibility = ViewStates.Visible;
             }
             else
             {
-                downloadButton.Visibility = ViewStates.Gone;
+                addToDownloadButton.Visibility = ViewStates.Gone;
             }
 
             if (webpageData.IsFinal && nextPageReader != null)
@@ -297,6 +319,7 @@ namespace ImageDownloder
         }
 
 
+        #region List and Grid Adapter
         class BrowserListAdapter : BaseAdapter
         {
             public WebPageData[] data { get; set; } = null;
@@ -339,7 +362,7 @@ namespace ImageDownloder
                         default:
                             break;
                     }
-                    
+
                     VAdapterViewHolder vholder = new VAdapterViewHolder(convertView);
                     convertView.Tag = vholder;
                 }
@@ -363,9 +386,10 @@ namespace ImageDownloder
                     {
                         vHolder.noOfItemIncludedTextView.Visibility = ViewStates.Visible;
                         vHolder.noOfItemIncludedTextView.Text = data.NoOfItemsIncluded.ToString();
-                    }else
+                    }
+                    else
                         vHolder.noOfItemIncludedTextView.Visibility = ViewStates.Gone;
-                }                
+                }
 
                 //if (!data.IsFinal) vHolder.mainTextView.SetTextColor(Android.Graphics.Color.Red);
                 //else vHolder.mainTextView.SetTextColor(Android.Graphics.Color.White);
@@ -375,7 +399,7 @@ namespace ImageDownloder
 
                 if (!this.parent.IsNextPageRequestSent && currentWebPage.IsMultiPaged)
                 {
-                    float indexReched = (float) position / this.data.Length;
+                    float indexReched = (float)position / this.data.Length;
                     if (indexReched >= NextPageLoadingIndex)
                     {
                         var nextPage = currentWebPage.GetNextPage();
@@ -383,7 +407,7 @@ namespace ImageDownloder
                         {
                             analysisModule.RequestStringData(UidGenerator(), nextPage, this.parent);
                             this.parent.IsNextPageRequestSent = true;
-                        }                        
+                        }
                     }
                 }
 
@@ -423,8 +447,10 @@ namespace ImageDownloder
                     default:
                         break;
                 }
-                
+
             }
         }
+        #endregion
+
     }
 }

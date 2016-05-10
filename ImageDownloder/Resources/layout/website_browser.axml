@@ -10,15 +10,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/addToDownloadLinearLayout"
-        android:gravity="right">
-        <Button
-            android:text="Download"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/addToDownloadButton"
-            android:backgroundTint="#0D47A1"
-            android:backgroundTintMode="multiply"
-            android:textColor="#ffffff" />
+        android:gravity="right"
+        android:background="#ffffff"
+        android:elevation="5dp">
+        <EditText
+            android:layout_width="250dp"
+            android:layout_height="match_parent"
+            android:id="@+id/searchEditText"
+            android:lines="1"
+            android:editable="true"
+            android:hint="Search"
+            android:singleLine="true" />
+        <ImageButton
+            android:background="@drawable/search_active"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:id="@+id/searchButton" />
+        <ImageButton
+            android:background="@drawable/download_icon"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:id="@+id/addToDownloadButton" />
     </LinearLayout>
     <GridView
         android:minWidth="25px"
